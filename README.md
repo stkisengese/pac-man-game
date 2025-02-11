@@ -1,3 +1,15 @@
 # make-your-game
 
-Our own version of pacman in javascript
+## Artifacts 
+### Dynamic
+Power pellets
+Dots
+### Static
+Pacman
+Ghosts
+Lives
+
+## Display
+Score
+High Score
+Time
