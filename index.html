@@ -5,22 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div id="game-ui">
-        <div id="row-top">
+    <div id="game-ui class="game-ui">
+        <div id="row-top" class="row-top">
             <div class='column _1'>
-                <div class='one-up'>POINTS</div>
+                <div class='points'>POINTS</div>
                 <div id='points-display'></div>
               </div>
               <div class='column _2'>
-                <div>HIGH SCORE</div>
+                <div class="high-score">HIGH SCORE</div>
                 <div id='high-score-display'></div>
               </div>
         </div>
-        <div id="maze">
-        <img src="maze_blue.svg" alt="maze">
+        <div id="maze" class="maze">
+        <img id="maze-img" class="maze-img" src="maze_blue.svg" alt="maze" >
         <div id="dot-container"></div>
         <p id='pacman' class='pacman'></p>
         <p id='pacman-arrow' class='pacman'></p>
@@ -30,7 +31,8 @@
         <p id='blinky' class='ghost'></p>
     </div>
     </div>
-    
+    <script src="script.js"></script>
+    <script src="maze.js"></script>
 </body>
 
 </html>

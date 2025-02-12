@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* Center the game UI */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full height of viewport */
+    margin: 0; /* Remove default margin */
+    background-color: black; 
+    color: yellow; /* text color */
+    font-family: 'Press Start 2P', sans-serif;
+    text-transform: uppercase; /* Classic arcade look */
+}
+
+/* Style the text */
+.row-top div {
+    font-size: 15px;
+    letter-spacing: 1px;
+    padding: 1px;
+}
+
+/* Ensure the game UI does not stretch */
+.game-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 600px; /* Adjust to fit the game */
+    height: 700px; /* Adjust as needed */
+    background-color: #000; /* Optional: Game background */
+    padding: 10px;
+    border-radius: 10px; /* Optional: Rounded corners */
+    text-align: center;
+}
+
+/* Ensure maze is centered */
+.maze {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.maze-img{
+    width: 504px;
+    height: 558px;
+}
+
+
+#dot-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.dot {
+    position: absolute;
+    background-color: yellow;
+    border-radius: 50%;
+}
