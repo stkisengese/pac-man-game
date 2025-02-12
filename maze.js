@@ -1,5 +1,5 @@
 window.onload = function() {
-    renderDots();
+    renderRandomDots();
 };
 
 
@@ -39,98 +39,136 @@ const mazeGrid =
 ]
 
 const dotContainer = document.getElementById("dot-container");
+const cellSize = 18;
+const dotSize = 4;
+const powerPelletSize = 12; // Larger size for power pellets
+const POWER_PELLETS_COUNT = 5;
+const POWER_PELLET_POINTS = 50; // Points for power pellets
 
-const cellSize = 18; // Adjust based on maze size
-const dotSize = 4;   // Size of the dots
+function getRandomDotPercentage() {
+    return Math.random() * (85 - 75) + 75;
+}
 
-mazeGrid.forEach((row, rowIndex) => {
-    row.forEach((cell, colIndex) => {
-        if (cell === 1) { // Only place dots on paths
-            const dot = document.createElement("div");
-            dot.classList.add("dot");
-            dot.style.width = `${dotSize}px`;
-            dot.style.height = `${dotSize}px`;
-            dot.style.position = "absolute";
-            dot.style.backgroundColor = "yellow";
-            dot.style.borderRadius = "50%";
-            dot.style.top = `${rowIndex * cellSize + cellSize / 2 - dotSize / 2}px`;
-            dot.style.left = `${colIndex * cellSize + cellSize / 2 - dotSize / 2}px`;
-            dotContainer.appendChild(dot);
-        }
+function countPossibleDotPositions() {
+    return mazeGrid.flat().filter(cell => cell === 1).length;
+}
+
+function renderRandomDots() {
+    dotContainer.innerHTML = '';
+    
+    const totalPossibleDots = countPossibleDotPositions();
+    const percentageToShow = getRandomDotPercentage();
+    const numberOfDotsToShow = Math.floor(totalPossibleDots * (percentageToShow / 100));
+    
+    // Create array of all possible positions
+    const allPositions = [];
+    mazeGrid.forEach((row, rowIndex) => {
+        row.forEach((cell, colIndex) => {
+            if (cell === 1) {
+                allPositions.push({ row: rowIndex, col: colIndex });
+            }
+        });
     });
-});
+    
+    // First, select positions for power pellets
+    const powerPelletPositions = [];
+    for (let i = 0; i < POWER_PELLETS_COUNT; i++) {
+        const randomIndex = Math.floor(Math.random() * allPositions.length);
+        const position = allPositions.splice(randomIndex, 1)[0];
+        powerPelletPositions.push(position);
+    }
+    
+    // Then select positions for regular dots
+    const regularDotPositions = [];
+    const dotsNeeded = numberOfDotsToShow - POWER_PELLETS_COUNT;
+    while (regularDotPositions.length < dotsNeeded) {
+        const randomIndex = Math.floor(Math.random() * allPositions.length);
+        const position = allPositions.splice(randomIndex, 1)[0];
+        regularDotPositions.push(position);
+    }
+    
+    // Create regular dots
+    regularDotPositions.forEach(pos => {
+        const dot = document.createElement("div");
+        dot.classList.add("dot");
+        dot.dataset.points = "10";
+        dot.style.width = `${dotSize}px`;
+        dot.style.height = `${dotSize}px`;
+        dot.style.position = "absolute";
+        dot.style.backgroundColor = "yellow";
+        dot.style.borderRadius = "50%";
+        dot.style.top = `${pos.row * cellSize + cellSize / 2 - dotSize / 2}px`;
+        dot.style.left = `${pos.col * cellSize + cellSize / 2 - dotSize / 2}px`;
+        dotContainer.appendChild(dot);
+    });
+    
+    // Create power pellets
+    powerPelletPositions.forEach(pos => {
+        const powerPellet = document.createElement("div");
+        powerPellet.classList.add("dot", "power-pellet");
+        powerPellet.dataset.points = POWER_PELLET_POINTS.toString();
+        powerPellet.style.width = `${powerPelletSize}px`;
+        powerPellet.style.height = `${powerPelletSize}px`;
+        powerPellet.style.position = "absolute";
+        powerPellet.style.backgroundColor = "yellow";
+        powerPellet.style.borderRadius = "50%";
+        powerPellet.style.top = `${pos.row * cellSize + cellSize / 2 - powerPelletSize / 2}px`;
+        powerPellet.style.left = `${pos.col * cellSize + cellSize / 2 - powerPelletSize / 2}px`;
+        
+        // Add animation for power pellets
+        powerPellet.style.animation = "powerPelletPulse 0.7s ease-in-out infinite";
+        dotContainer.appendChild(powerPellet);
+    });
+    
+    // Store game state information
+    window.gameState = {
+        totalDots: numberOfDotsToShow,
+        dotsRemaining: numberOfDotsToShow,
+        dotPercentage: percentageToShow.toFixed(1),
+        powerPelletsRemaining: POWER_PELLETS_COUNT,
+        maxPossibleScore: (dotsNeeded * 10) + (POWER_PELLETS_COUNT * POWER_PELLET_POINTS)
+    };
+    
+    console.log(`Generated ${dotsNeeded} regular dots and ${POWER_PELLETS_COUNT} power pellets (${percentageToShow.toFixed(1)}% of ${totalPossibleDots} possible positions)`);
+    return numberOfDotsToShow;
+}
 
+function getGameState() {
+    return window.gameState;
+}
 
+function collectDot(dotElement) {
+    if (dotElement && dotElement.classList.contains('dot')) {
+        const points = parseInt(dotElement.dataset.points) || 10;
+        window.gameState.dotsRemaining--;
+        
+        if (dotElement.classList.contains('power-pellet')) {
+            window.gameState.powerPelletsRemaining--;
+            // You can trigger ghost vulnerability here
+            document.dispatchEvent(new CustomEvent('powerPelletCollected'));
+        }
+        
+        dotElement.remove();
+        return points;
+    }
+    return 0;
+}
 
+function areAllDotsCollected() {
+    return window.gameState.dotsRemaining === 0;
+}
 
+function resetDots() {
+    return renderRandomDots();
+}
 
-
-
-
-
-
-
-
-// document.addEventListener("DOMContentLoaded", () => {
-//     const dotContainer = document.getElementById("dot-container");
-//     const svg = document.querySelector("#maze img"); // Assuming SVG is inside #maze as an <img>
-
-//     if (!dotContainer || !svg) {
-//         console.error("Dot container or SVG maze not found.");
-//         return;
-//     }
-
-//     function placeDots() {
-//         fetch(svg.src)
-//             .then(response => response.text())
-//             .then(svgText => {
-//                 const parser = new DOMParser();
-//                 const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
-//                 const paths = svgDoc.querySelectorAll("path");
-
-//                 // Get the original viewBox size from the SVG
-//                 const svgElement = svgDoc.querySelector("svg");
-//                 const [viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight] = svgElement
-//                     .getAttribute("viewBox")
-//                     .split(" ")
-//                     .map(Number);
-
-//                 function updateDots() {
-//                     const { width: actualWidth, height: actualHeight } = svg.getBoundingClientRect();
-//                     const scaleX = actualWidth / viewBoxWidth;
-//                     const scaleY = actualHeight / viewBoxHeight;
-
-//                     dotContainer.innerHTML = ""; // Clear old dots
-
-//                     paths.forEach(path => {
-//                         const pathLength = path.getTotalLength();
-//                         const dotSpacing = 10; // Adjust density
-
-//                         for (let i = 0; i < pathLength; i += dotSpacing) {
-//                             const point = path.getPointAtLength(i);
-
-//                             const dot = document.createElement("div");
-//                             dot.style.position = "absolute";
-//                             dot.style.width = `${2 * scaleX}px`;  // Scale dot size
-//                             dot.style.height = `${2 * scaleY}px`;
-//                             dot.style.backgroundColor = "red";
-//                             dot.style.borderRadius = "50%";
-//                             dot.style.border = "1px solid white";
-//                             dot.style.top = `${point.y * scaleY}px`;
-//                             dot.style.left = `${point.x * scaleX}px`;
-
-//                             dotContainer.appendChild(dot);
-//                         }
-//                     });
-
-//                     console.log("Dots updated for new scale:", scaleX, scaleY);
-//                 }
-
-//                 updateDots();
-//                 window.addEventListener("resize", updateDots); // Adjust dots when resizing
-//             })
-//             .catch(error => console.error("Error loading SVG:", error));
-//     }
-
-//     placeDots();
-// });
+// Add this CSS to your stylesheet
+const style = document.createElement('style');
+style.textContent = `
+@keyframes powerPelletPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.8); }
+    100% { transform: scale(1); }
+}
+`;
+document.head.appendChild(style);
