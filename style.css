@@ -1,5 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
+@font-face {
+    font-family: 'Press Start 2P Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Press Start 2P Regular'), url('./Fonts/PressStart2P-Regular.woff') format('woff');
+    }
 /* Center the game UI */
 body {
     display: flex;
@@ -9,7 +13,7 @@ body {
     margin: 0; /* Remove default margin */
     background-color: black; 
     color: yellow; /* text color */
-    font-family: 'Press Start 2P', sans-serif;
+    font-family: 'Press Start 2P Regular', sans-serif;
     text-transform: uppercase; /* Classic arcade look */
 }
 
