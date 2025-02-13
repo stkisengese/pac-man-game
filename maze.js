@@ -46,7 +46,8 @@ const POWER_PELLETS_COUNT = 5;
 const POWER_PELLET_POINTS = 50; // Points for power pellets
 
 function getRandomDotPercentage() {
-    return Math.random() * (85 - 75) + 75;
+    return 100
+    // return Math.random() * (85 - 75) + 75;
 }
 
 function countPossibleDotPositions() {
@@ -162,7 +163,7 @@ function resetDots() {
     return renderRandomDots();
 }
 
-// Add this CSS to your stylesheet
+// CSS 
 const style = document.createElement('style');
 style.textContent = `
 @keyframes powerPelletPulse {

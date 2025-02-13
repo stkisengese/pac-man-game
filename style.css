@@ -60,7 +60,7 @@ body {
 }
 
 .dot {
-    position: absolute;
+    position: relative;
     background-color: yellow;
     /* border-radius: 50%; */
 }
