@@ -46,8 +46,8 @@ const POWER_PELLETS_COUNT = 5;
 const POWER_PELLET_POINTS = 50; // Points for power pellets
 
 function getRandomDotPercentage() {
-    return 100
-    // return Math.random() * (85 - 75) + 75;
+    return 65
+   // return Math.random() * (85 - 75) + 75;
 }
 
 function countPossibleDotPositions() {
@@ -173,3 +173,204 @@ style.textContent = `
 }
 `;
 document.head.appendChild(style);
+
+document.addEventListener("DOMContentLoaded", () => {
+    const pacman = document.getElementById("pacman");
+    if (!pacman) {
+        console.error("Pacman element not found!");
+        return;
+    }
+
+    // Configuration constants - adjust these for fine-tuning
+    const CELL_SIZE = 18;
+    const POSITION_OFFSET = {
+        x: 8,  // Adjust if Pac-Man needs to shift left/right
+        y: -7   // Adjust if Pac-Man needs to shift up/down
+    };
+    const GRID_SNAP_THRESHOLD = 1; // How close to center before snapping
+    
+    // Starting position (in grid coordinates)
+    let currentGridX = 13;
+    let currentGridY = 23;
+    
+    // Pixel position (will be kept aligned to grid)
+    let x = currentGridX * CELL_SIZE + POSITION_OFFSET.x;
+    let y = currentGridY * CELL_SIZE + POSITION_OFFSET.y;
+    
+    let speed = 3;
+    let direction = "right";
+    let nextDirection = "right";
+    let isMoving = false;
+
+    // Create debug overlay for path visualization
+    function createDebugOverlay() {
+        const overlay = document.createElement('div');
+        overlay.style.position = 'absolute';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.pointerEvents = 'none';
+        overlay.id = 'debug-overlay';
+        
+        mazeGrid.forEach((row, rowIndex) => {
+            row.forEach((cell, colIndex) => {
+                if (cell === 1) {  // If it's a path
+                    const pathCell = document.createElement('div');
+                    pathCell.style.position = 'absolute';
+                    pathCell.style.width = `${CELL_SIZE}px`;
+                    pathCell.style.height = `${CELL_SIZE}px`;
+                    pathCell.style.top = `${rowIndex * CELL_SIZE}px`;
+                    pathCell.style.left = `${colIndex * CELL_SIZE}px`;
+                    pathCell.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';  // Semi-transparent red
+                    pathCell.style.border = '1px solid rgba(255, 0, 0, 0.5)';
+                    pathCell.style.boxSizing = 'border-box';
+                    overlay.appendChild(pathCell);
+                }
+            });
+        });
+        
+        document.querySelector('.maze').appendChild(overlay);
+    }
+
+    function initializePacman() {
+        Object.assign(pacman.style, {
+            position: 'absolute',
+            width: '18px',
+            height: '18px',
+            left: `${x}px`,
+            top: `${y}px`,
+            backgroundColor: 'yellow',
+            borderRadius: '50%',
+            visibility: 'visible',
+            transform: 'translate(-50%, -50%)',
+            transition: 'transform 0.1s ease',
+            zIndex: '1000'  // Ensure Pac-Man appears above debug overlay
+        });
+        
+        pacman.innerHTML = '&#9786;';
+        
+        // Create debug overlay
+        createDebugOverlay();
+    }
+
+    function isValidMove(gridX, gridY) {
+        if (gridY < 0 || gridY >= mazeGrid.length || 
+            gridX < 0 || gridX >= mazeGrid[0].length) {
+            return false;
+        }
+        return mazeGrid[gridY][gridX] === 1;
+    }
+
+    function handleTunnel(gridX, gridY) {
+        if (gridY === 14) {
+            if (gridX <= 0) return { x: 27, y: gridY };
+            if (gridX >= 27) return { x: 0, y: gridY };
+        }
+        return { x: gridX, y: gridY };
+    }
+
+    function getNextPosition(currentX, currentY, dir) {
+        let nextX = currentX;
+        let nextY = currentY;
+        
+        switch(dir) {
+            case "right": nextX++; break;
+            case "left": nextX--; break;
+            case "up": nextY--; break;
+            case "down": nextY++; break;
+        }
+
+        const tunnelPos = handleTunnel(nextX, nextY);
+        return tunnelPos;
+    }
+
+    function isAtGridCenter() {
+        const gridAlignedX = Math.round(x / CELL_SIZE) * CELL_SIZE + POSITION_OFFSET.x;
+        const gridAlignedY = Math.round(y / CELL_SIZE) * CELL_SIZE + POSITION_OFFSET.y;
+        return Math.abs(x - gridAlignedX) < GRID_SNAP_THRESHOLD && 
+               Math.abs(y - gridAlignedY) < GRID_SNAP_THRESHOLD;
+    }
+
+    function updatePacman() {
+        const currentGridX = Math.round((x - POSITION_OFFSET.x) / CELL_SIZE);
+        const currentGridY = Math.round((y - POSITION_OFFSET.y) / CELL_SIZE);
+
+        if (isAtGridCenter()) {
+            if (nextDirection !== direction) {
+                const nextPos = getNextPosition(currentGridX, currentGridY, nextDirection);
+                if (isValidMove(nextPos.x, nextPos.y)) {
+                    direction = nextDirection;
+                    x = currentGridX * CELL_SIZE + POSITION_OFFSET.x;
+                    y = currentGridY * CELL_SIZE + POSITION_OFFSET.y;
+                    
+                    let rotation = 0;
+                    switch(direction) {
+                        case 'right': rotation = 0; break;
+                        case 'down': rotation = 90; break;
+                        case 'left': rotation = 180; break;
+                        case 'up': rotation = 270; break;
+                    }
+                    pacman.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+                }
+            }
+        }
+
+        const nextPos = getNextPosition(currentGridX, currentGridY, direction);
+        if (isValidMove(nextPos.x, nextPos.y)) {
+            isMoving = true;
+            switch(direction) {
+                case "right": x += speed; break;
+                case "left": x -= speed; break;
+                case "up": y -= speed; break;
+                case "down": y += speed; break;
+            }
+
+            if (nextPos.x === 27 && currentGridX === 0) x = nextPos.x * CELL_SIZE + POSITION_OFFSET.x;
+            if (nextPos.x === 0 && currentGridX === 27) x = 0 + POSITION_OFFSET.x;
+        } else {
+            isMoving = false;
+            x = currentGridX * CELL_SIZE + POSITION_OFFSET.x;
+            y = currentGridY * CELL_SIZE + POSITION_OFFSET.y;
+        }
+
+        pacman.style.left = `${x}px`;
+        pacman.style.top = `${y}px`;
+    }
+
+    document.addEventListener("keydown", (event) => {
+        switch(event.key) {
+            case "ArrowRight": 
+                event.preventDefault();
+                nextDirection = "right"; 
+                break;
+            case "ArrowLeft": 
+                event.preventDefault();
+                nextDirection = "left"; 
+                break;
+            case "ArrowUp": 
+                event.preventDefault();
+                nextDirection = "up"; 
+                break;
+            case "ArrowDown": 
+                event.preventDefault();
+                nextDirection = "down"; 
+                break;
+            // Debug controls
+            case 'd':
+                const overlay = document.getElementById('debug-overlay');
+                if (overlay) {
+                    overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
+                }
+                break;
+        }
+    });
+
+    function gameLoop() {
+        updatePacman();
+        requestAnimationFrame(gameLoop);
+    }
+
+    initializePacman();
+    gameLoop();
+});
