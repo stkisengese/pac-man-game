@@ -46,7 +46,7 @@ const POWER_PELLETS_COUNT = 5;
 const POWER_PELLET_POINTS = 50; // Points for power pellets
 
 function getRandomDotPercentage() {
-    return 65
+    return 100
    // return Math.random() * (85 - 75) + 75;
 }
 
@@ -127,7 +127,8 @@ function renderRandomDots() {
         dotsRemaining: numberOfDotsToShow,
         dotPercentage: percentageToShow.toFixed(1),
         powerPelletsRemaining: POWER_PELLETS_COUNT,
-        maxPossibleScore: (dotsNeeded * 10) + (POWER_PELLETS_COUNT * POWER_PELLET_POINTS)
+        maxPossibleScore: (dotsNeeded * 10) + (POWER_PELLETS_COUNT * POWER_PELLET_POINTS),
+        gameOver: false,
     };
     
     console.log(`Generated ${dotsNeeded} regular dots and ${POWER_PELLETS_COUNT} power pellets (${percentageToShow.toFixed(1)}% of ${totalPossibleDots} possible positions)`);
@@ -240,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
             height: '18px',
             left: `${x}px`,
             top: `${y}px`,
-            backgroundColor: 'yellow',
+            backgroundColor: 'white',
             borderRadius: '50%',
             visibility: 'visible',
             transform: 'translate(-50%, -50%)',
@@ -292,7 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
                Math.abs(y - gridAlignedY) < GRID_SNAP_THRESHOLD;
     }
 
-    function updatePacman() {
+     function updatePacman() {
         const currentGridX = Math.round((x - POSITION_OFFSET.x) / CELL_SIZE);
         const currentGridY = Math.round((y - POSITION_OFFSET.y) / CELL_SIZE);
 
@@ -374,3 +375,5 @@ document.addEventListener("DOMContentLoaded", () => {
     initializePacman();
     gameLoop();
 });
+
+// Add this at the end of maze.js
