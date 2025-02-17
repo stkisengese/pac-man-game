@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <style>
+    .pacman {
+      fill: #FFFF00;
+    }
+    
+    @keyframes eat {
+      0% { d: path('M50,50 L100,25 A50,50 0 1,0 100,75 Z'); }
+      50% { d: path('M50,50 L50,50 A50,50 0 1,0 50,50 Z'); }
+      100% { d: path('M50,50 L100,25 A50,50 0 1,0 100,75 Z'); }
+    }
+    
+    #pacman-shape {
+      animation: eat 0.7s ease-in-out infinite;
+    }
+  </style>
+  
+  <path id="pacman-shape" class="pacman" d="M50,50 L100,25 A50,50 0 1,0 100,75 Z" />
+</svg>

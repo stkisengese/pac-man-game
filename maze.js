@@ -97,7 +97,7 @@ function renderRandomDots() {
         dot.style.height = `${dotSize}px`;
         dot.style.position = "absolute";
         dot.style.backgroundColor = "yellow";
-        dot.style.borderRadius = "50%";
+       // dot.style.borderRadius = "50%";
         dot.style.top = `${pos.row * cellSize + cellSize / 2 - dotSize / 2}px`;
         dot.style.left = `${pos.col * cellSize + cellSize / 2 - dotSize / 2}px`;
         dotContainer.appendChild(dot);
@@ -263,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
             height: '18px',
             left: `${x}px`,
             top: `${y}px`,
-            backgroundColor: 'white',
+            //backgroundColor: 'white',
             borderRadius: '50%',
             visibility: 'visible',
             transform: 'translate(-50%, -50%)',
@@ -271,10 +271,10 @@ document.addEventListener("DOMContentLoaded", () => {
             zIndex: '1000'  // Ensure Pac-Man appears above debug overlay
         });
         
-        pacman.innerHTML = '&#9786;';
+       // pacman.innerHTML = '&#9786;';
         
         // Create debug overlay
-        createDebugOverlay();
+     //   createDebugOverlay();
     }
 
     function isValidMove(gridX, gridY) {

@@ -200,9 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
         
         lives--;
         console.log(`Collision! Lives remaining: ${lives}`);
-    
-
-
         
        // Reset Pac-Man position
         const pacman = document.getElementById('pacman');
