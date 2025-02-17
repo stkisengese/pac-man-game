@@ -17,10 +17,10 @@ const mazeGrid =
         [0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0],
         [0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0],
         [0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0],
-        [0,0,0,0,0,0,1,0,0,1,0,0,0,2,2,0,0,0,1,0,0,1,0,0,0,0,0,0],
-        [0,0,0,0,0,0,1,0,0,1,0,3,3,3,3,3,3,0,1,0,0,1,0,0,0,0,0,0],
-        [1,1,1,1,1,1,1,1,1,1,0,3,3,3,3,3,3,0,1,1,1,1,1,1,1,1,1,1],
-        [0,0,0,0,0,0,1,0,0,1,0,3,3,3,3,3,3,0,1,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,1,0,0,0,0,2,0,0,0,1,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,1,0,0,0,0,2,0,0,0,1,0,0,1,0,0,0,0,0,0],
+        [1,1,1,1,1,1,1,1,1,1,0,0,3,3,3,3,3,0,1,1,1,1,1,1,1,1,1,1],
+        [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
         [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
         [0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0],
         [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
@@ -120,6 +120,28 @@ function renderRandomDots() {
         powerPellet.style.animation = "powerPelletPulse 0.7s ease-in-out infinite";
         dotContainer.appendChild(powerPellet);
     });
+
+
+    // // Add ghost house visualization
+    // mazeGrid.forEach((row, rowIndex) => {
+    //     row.forEach((cell, colIndex) => {
+    //         if (cell === 3) {
+    //             const houseCell = document.createElement("div");
+    //             houseCell.classList.add("ghost-house-debug");
+    //             Object.assign(houseCell.style, {
+    //                 position: "absolute",
+    //                 width: `${cellSize}px`,
+    //                 height: `${cellSize}px`,
+    //                 backgroundColor: "rgba(255, 0, 0, 0.2)", // semi-transparent red
+    //                 border: "1px solid red",
+    //                 top: `${rowIndex * cellSize}px`,
+    //                 left: `${colIndex * cellSize}px`,
+    //                 zIndex: "1"
+    //             });
+    //             dotContainer.appendChild(houseCell);
+    //         }
+    //     });
+    // });
     
     // Store game state information
     window.gameState = {
@@ -128,7 +150,7 @@ function renderRandomDots() {
         dotPercentage: percentageToShow.toFixed(1),
         powerPelletsRemaining: POWER_PELLETS_COUNT,
         maxPossibleScore: (dotsNeeded * 10) + (POWER_PELLETS_COUNT * POWER_PELLET_POINTS),
-        gameOver: false,
+        gameOver: true,
     };
     
     console.log(`Generated ${dotsNeeded} regular dots and ${POWER_PELLETS_COUNT} power pellets (${percentageToShow.toFixed(1)}% of ${totalPossibleDots} possible positions)`);

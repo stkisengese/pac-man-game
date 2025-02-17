@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
     // Ghost configuration
     const GHOST_CONFIG = {
-        blinky: { startX: 13, startY: 11, color: 'red', character: '👻' },
-        pinky: { startX: 13, startY: 13, color: 'pink', character: '👻' },
-        inky: { startX: 11, startY: 13, color: 'cyan', character: '👻' },
-        clyde: { startX: 15, startY: 13, color: 'orange', character: '👻' }
+        blinky: { startX: 14, startY: 11, color: 'red', character: '👻' },
+        pinky: { startX: 12, startY: 14, color: 'pink', character: '👻' },
+        inky: { startX: 14, startY: 14, color: 'cyan', character: '👻' },
+        clyde: { startX: 16, startY: 14, color: 'orange', character: '👻' }
     };
 
     const CELL_SIZE = 18;
@@ -40,8 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
         initializeGhost(config) {
             Object.assign(this.element.style, {
                 position: 'absolute',
-                width: '36px',
-                height: '36px',
+                width: '15px',
+                height: '15px',
                 backgroundColor: config.color,
                 left: `${this.x}px`,
                 top: `${this.y}px`,
@@ -70,7 +70,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 gridX < 0 || gridX >= mazeGrid[0].length) {
                 return false;
             }
-            return mazeGrid[gridY][gridX] >= 1; // Ghosts can move on paths (1) and in ghost house (2,3)
+            // Allow movement on paths (1), ghost house entrance (2) and ghost house (3)
+            return mazeGrid[gridY][gridX] === 1 || 
+                   mazeGrid[gridY][gridX] === 2 || 
+                   mazeGrid[gridY][gridX] === 3;
         }
 
         handleTunnel(gridX, gridY) {
@@ -188,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let lives = 3;
     let isImmune = false;
     let immunityTime = 2000; // 2 seconds immunity after collision
-    let gameover=true
+    let gameover=false
     resetPacman=false
 // let gstatege=GameState()
 // console.log(gstatege)
