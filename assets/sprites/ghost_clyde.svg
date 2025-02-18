@@ -1,0 +1,17 @@
+<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="orange">
+        <animate attributeName="d" 
+            values="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19;
+                    M1,20 L1,9 C1,4.5 5,1 10,1 C15,1 19,4.5 19,9 L19,20 L15,16 L13,20 L10,16 L7,20 L5,16 L1,20"
+            dur="0.5s"
+            repeatCount="indefinite"/>
+    </path>
+    <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
+    <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
+    <circle class="pupil" cx="7" cy="8" r="1" fill="black">
+        <animate attributeName="cx" values="6;8;6" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle class="pupil" cx="13" cy="8" r="1" fill="black">
+        <animate attributeName="cx" values="12;14;12" dur="2s" repeatCount="indefinite"/>
+    </circle>
+</svg>

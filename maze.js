@@ -225,42 +225,42 @@ document.addEventListener("DOMContentLoaded", () => {
     let nextDirection = "right";
     let isMoving = false;
 
-    // Create debug overlay for path visualization
-    function createDebugOverlay() {
-        const overlay = document.createElement('div');
-        overlay.style.position = 'absolute';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100%';
-        overlay.style.height = '100%';
-        overlay.style.pointerEvents = 'none';
-        overlay.id = 'debug-overlay';
+    // // Create debug overlay for path visualization
+    // function createDebugOverlay() {
+    //     const overlay = document.createElement('div');
+    //     overlay.style.position = 'absolute';
+    //     overlay.style.top = '0';
+    //     overlay.style.left = '0';
+    //     overlay.style.width = '100%';
+    //     overlay.style.height = '100%';
+    //     overlay.style.pointerEvents = 'none';
+    //     overlay.id = 'debug-overlay';
         
-        mazeGrid.forEach((row, rowIndex) => {
-            row.forEach((cell, colIndex) => {
-                if (cell === 1) {  // If it's a path
-                    const pathCell = document.createElement('div');
-                    pathCell.style.position = 'absolute';
-                    pathCell.style.width = `${CELL_SIZE}px`;
-                    pathCell.style.height = `${CELL_SIZE}px`;
-                    pathCell.style.top = `${rowIndex * CELL_SIZE}px`;
-                    pathCell.style.left = `${colIndex * CELL_SIZE}px`;
-                    pathCell.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';  // Semi-transparent red
-                    pathCell.style.border = '1px solid rgba(255, 0, 0, 0.5)';
-                    pathCell.style.boxSizing = 'border-box';
-                    overlay.appendChild(pathCell);
-                }
-            });
-        });
+    //     mazeGrid.forEach((row, rowIndex) => {
+    //         row.forEach((cell, colIndex) => {
+    //             if (cell === 1) {  // If it's a path
+    //                 const pathCell = document.createElement('div');
+    //                 pathCell.style.position = 'absolute';
+    //                 pathCell.style.width = `${CELL_SIZE}px`;
+    //                 pathCell.style.height = `${CELL_SIZE}px`;
+    //                 pathCell.style.top = `${rowIndex * CELL_SIZE}px`;
+    //                 pathCell.style.left = `${colIndex * CELL_SIZE}px`;
+    //                 pathCell.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';  // Semi-transparent red
+    //                 pathCell.style.border = '1px solid rgba(255, 0, 0, 0.5)';
+    //                 pathCell.style.boxSizing = 'border-box';
+    //                 overlay.appendChild(pathCell);
+    //             }
+    //         });
+    //     });
         
-        document.querySelector('.maze').appendChild(overlay);
-    }
+    //     document.querySelector('.maze').appendChild(overlay);
+    // }
 
     function initializePacman() {
         Object.assign(pacman.style, {
             position: 'absolute',
-            width: '18px',
-            height: '18px',
+            width: '16px',
+            height: '16px',
             left: `${x}px`,
             top: `${y}px`,
             //backgroundColor: 'white',
@@ -397,5 +397,3 @@ document.addEventListener("DOMContentLoaded", () => {
     initializePacman();
     gameLoop();
 });
-
-// Add this at the end of maze.js

@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 position: 'absolute',
                 width: '15px',
                 height: '15px',
-                backgroundColor: config.color,
+               // backgroundColor: config.color,
                 left: `${this.x}px`,
                 top: `${this.y}px`,
                 color: config.color,
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 transform: 'translate(-50%, -50%)',
                 zIndex: '900'
             });
-            this.element.innerHTML = config.character;
+           // this.element.innerHTML = config.character;
         }
 
         getRandomDirection() {
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Add game state
-    let lives = 3;
+    let lives = 2; //there are three lives. the last life is 0(for pacman life elemnet indexing)
     let isImmune = false;
     let immunityTime = 2000; // 2 seconds immunity after collision
     let gameover=false
@@ -210,8 +210,18 @@ document.addEventListener("DOMContentLoaded", () => {
     
         // Reset all ghosts
         Object.values(ghosts).forEach(ghost => ghost.reset());
-    
-        if (lives === 0) {
+        
+
+        // Apply fade-in effect to maze
+    const maze = document.querySelector('.maze');
+    if (maze) {
+        maze.classList.add('fade-in');
+        setTimeout(() => {
+            maze.classList.remove('fade-in');
+        }, 1000); // Duration of fade-in animation
+    }
+
+        if (lives === -1) {
             console.log('Game Over!');
             gameover=true
             return;
@@ -221,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
         isImmune = true;
         setTimeout(() => { isImmune = false; }, immunityTime);
     
-        // Hide life indicator
+        // Remove or hide one life indicator
         const lifeElements = document.querySelectorAll('.pacman-life');
         if (lifeElements[lives]) {
             lifeElements[lives].style.visibility = 'hidden';
@@ -265,5 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (gameover==false){
         ghostLoop();
+    } else{
+        // TODO set game over text to visible
     }
 });
