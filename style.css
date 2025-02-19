@@ -15,6 +15,7 @@ body {
     color: yellow; /* text color */
     font-family: 'Press Start 2P Regular', sans-serif;
     text-transform: uppercase; /* Classic arcade look */
+    overflow: hidden;
 }
 
 /* Style the text */
