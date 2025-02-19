@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const CELL_SIZE = 18;
     const GHOST_POSITION_OFFSET = {
-        x: 8,  // Horizontal offset to center ghost
-        y: -7  // Vertical offset to center ghost
+        x: 4,  // Horizontal offset to center ghost in path
+        y: -7  // Vertical offset to center ghost in path
     };
     const GHOST_SPEED = 1;
     const GRID_SNAP_THRESHOLD = 1;
@@ -195,6 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resetPacman=false
 // let gstatege=GameState()
 // console.log(gstatege)
+//console.log(PACMAN_START_POS)
     function handleCollision() {
         if (isImmune) return;
         
@@ -213,15 +214,21 @@ document.addEventListener("DOMContentLoaded", () => {
         
 
         // Apply fade-in effect to maze
-    const maze = document.querySelector('.maze');
-    if (maze) {
-        maze.classList.add('fade-in');
-        setTimeout(() => {
-            maze.classList.remove('fade-in');
-        }, 1000); // Duration of fade-in animation
-    }
+        const overlay = document.getElementById('fade-overlay');
+        if (overlay && lives>-1) {
+            overlay.style.opacity='1';
+            overlay.style.backgroundColor='black'
+            setTimeout(() => {
+                overlay.style.opacity='0';
+            }, 800); // Duration of fade-in and fade-out animation
+        }
+    
 
         if (lives === -1) {
+            const gameOverAlert= document.querySelector('.game-over')
+            gameOverAlert.style.display='block'
+            overlay.style.opacity='1';
+            overlay.style.backgroundColor=''
             console.log('Game Over!');
             gameover=true
             return;

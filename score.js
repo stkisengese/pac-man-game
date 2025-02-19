@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateScore(points) {
         score += points;
-        scoreElement.textContent = `Score: ${score}`;
+        scoreElement.textContent = `${score}`;
     }
 
     function checkCollision() {

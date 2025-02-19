@@ -61,7 +61,7 @@ body {
 
 .dot {
     position: relative;
-    background-color: yellow;
+    /* background-color: yellow; */
     /* border-radius: 50%; */
 }
 .column_1,.column_2{ /*for the scores */
@@ -79,3 +79,46 @@ body {
    height: 20px;
    width:20px;
 }
+
+/* overlay for fade in animation */
+#fade-overlay {
+    color:red;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background-color:black; */
+    opacity: 0;
+    pointer-events: none; /* Ensure it doesn't block interactions */
+    transition: opacity 1s ease-in-out;
+    z-index: 1000; /* Ensure it covers the game UI */
+}
+.game-over {
+    margin-top: 30rem;
+    font-size: 30px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: red;
+    display: none;
+}
+
+
+/* Power Pellet Animation CSS */
+@keyframes powerPelletFlash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  
+  .power-pellet {
+    animation: powerPelletFlash 0.3s infinite;
+    
+  }
+  
+  /* Optional: Add a subtle size pulse for more visual impact
+  @keyframes powerPelletPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+   */
