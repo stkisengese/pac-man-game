@@ -402,6 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 break;
         }
+    
     });
 
 
@@ -448,7 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ####################################################################
 // Ghostloop
 
-//document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 // Ghost configuration
 const GHOST_CONFIG = {
     blinky: { startX: 14, startY: 11, color: 'red', character: '👻' },
@@ -722,5 +723,16 @@ for (const [id, config] of Object.entries(GHOST_CONFIG)) {
 // Handle power pellet collection
 document.addEventListener('powerPelletCollected', () => {
     Object.values(ghosts).forEach(ghost => ghost.makeVulnerable());
+});
+
+// Game loop for ghost movement
+function ghostLoop() {
+    updateGhosts();
+    requestAnimationFrame(ghostLoop);
+}
+
+if (gameover == false) {
+    ghostLoop();
+}
 });
 
