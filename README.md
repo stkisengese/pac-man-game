@@ -1,15 +1,12 @@
-# make-your-game
+# TODO
+Display Time
 
-## Artifacts 
-### Dynamic
-Power pellets
-Dots
-### Static
-Pacman
-Ghosts
-Lives
+High Sore(use window to store high score)
 
-## Display
-Score
-High Score
-Time
+Pause Menu with toggle resume/play button
+
+Main Menu with play button
+
+Ghost Movement algorithm
+
+Sound
