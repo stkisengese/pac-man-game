@@ -1,9 +1,10 @@
+
 window.onload = function() {
     renderRandomDots();
 };
 
 
-const mazeGrid = 
+export const mazeGrid = 
     [
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0],
@@ -173,7 +174,7 @@ function getGameState() {
     return window.gameState;
 }
 
-function collectDot(dotElement) {
+export function collectDot(dotElement) {
     if (dotElement && dotElement.classList.contains('dot')) {
         const points = parseInt(dotElement.dataset.points) || 10;
         window.gameState.dotsRemaining--;
@@ -209,11 +210,10 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-document.addEventListener("DOMContentLoaded", () => {
+// document.addEventListener("DOMContentLoaded", () => {
     const pacman = document.getElementById("pacman");
     if (!pacman) {
         console.error("Pacman element not found!");
-        return;
     }
 
     // Configuration constants - adjust these for fine-tuning
@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //     document.querySelector('.maze').appendChild(overlay);
     // }
 
-    function initializePacman() {
+     export function initializePacman() {
         Object.assign(pacman.style, {
             position: 'absolute',
             width: '16px',
@@ -290,6 +290,22 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Create debug overlay
      //   createDebugOverlay();
+    }
+
+     // Reset to starting position after death
+    export function resetPacmanPosition() {
+       
+        currentGridX = 13;
+        currentGridY = 23;
+        x = currentGridX * CELL_SIZE + POSITION_OFFSET.x;
+        y = currentGridY * CELL_SIZE + POSITION_OFFSET.y;
+        direction = "right";
+        nextDirection = "right";
+        
+        // Update visual position
+        pacman.style.left = `${x}px`;
+        pacman.style.top = `${y}px`;
+        pacman.style.transform = `translate(-50%, -50%) rotate(0deg)`;
     }
 
     function isValidMove(gridX, gridY) {
@@ -404,6 +420,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+
+document.addEventListener("DOMContentLoaded", () => {
     function gameLoop() {
         updatePacman();
         requestAnimationFrame(gameLoop);

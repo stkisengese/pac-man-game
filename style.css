@@ -15,6 +15,7 @@ body {
     color: yellow; /* text color */
     font-family: 'Press Start 2P Regular', sans-serif;
     text-transform: uppercase; /* Classic arcade look */
+    overflow: hidden; /* Prevent scrolling */
 }
 
 /* Style the text */
@@ -95,7 +96,7 @@ body {
     z-index: 1000; /* Ensure it covers the game UI */
 }
 .game-over {
-    margin-top: 30rem;
+    margin-top: 0rem;
     font-size: 30px;
     font-weight: bold;
     text-transform: uppercase;

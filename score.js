@@ -1,3 +1,5 @@
+import { collectDot } from './maze.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const pacman = document.getElementById('pacman');
     const scoreElement = document.getElementById('score');
@@ -26,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    
     function gameLoop() {
         checkCollision();
         requestAnimationFrame(gameLoop);

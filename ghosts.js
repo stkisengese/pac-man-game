@@ -1,3 +1,5 @@
+import { mazeGrid, resetPacmanPosition } from './maze.js';
+
 document.addEventListener("DOMContentLoaded", () => {
     // Ghost configuration
     const GHOST_CONFIG = {
@@ -192,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let isImmune = false;
     let immunityTime = 2000; // 2 seconds immunity after collision
     let gameover=false
-    resetPacman=false
+    //resetPacman=false
 // let gstatege=GameState()
 // console.log(gstatege)
 //console.log(PACMAN_START_POS)
@@ -202,12 +204,13 @@ document.addEventListener("DOMContentLoaded", () => {
         lives--;
         console.log(`Collision! Lives remaining: ${lives}`);
         
-       // Reset Pac-Man position
-        const pacman = document.getElementById('pacman');
-        if (pacman) {
-            pacman.style.left = `${PACMAN_START_POS.x}px`;
-            pacman.style.top = `${PACMAN_START_POS.y}px`;
-        }
+    //    // Reset Pac-Man position
+    //     const pacman = document.getElementById('pacman');
+    //     if (pacman) {
+    //         pacman.style.display='none'
+    //         pacman.style.left = `${PACMAN_START_POS.x}px`;
+    //         pacman.style.top = `${PACMAN_START_POS.y}px`;
+    //     }
     
         // Reset all ghosts
         Object.values(ghosts).forEach(ghost => ghost.reset());
@@ -221,8 +224,11 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 overlay.style.opacity='0';
             }, 800); // Duration of fade-in and fade-out animation
+            
         }
-    
+        setTimeout(() => { 
+            resetPacmanPosition()
+            pacman.style.display='block' }, 900);
 
         if (lives === -1) {
             const gameOverAlert= document.querySelector('.game-over')
