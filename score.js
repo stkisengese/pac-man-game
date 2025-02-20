@@ -1,13 +1,23 @@
 import { collectDot } from './maze.js';
 
+let score=0
+let highscore = localStorage.getItem('highscore') || 0;
+
+
 document.addEventListener('DOMContentLoaded', () => {
-    const pacman = document.getElementById('pacman');
-    const scoreElement = document.getElementById('score');
-    let score = 0;
+    const pacman = document.getElementById('pacman')
+    const scoreElement = document.getElementById('score')
+    const highScoreElement = document.getElementById('high-score-display')
 
     function updateScore(points) {
         score += points;
         scoreElement.textContent = `${score}`;
+        // Update high score if current score is higher
+        if (score > highscore) {
+            highscore = score;
+            localStorage.setItem('highscore', highscore)
+            highScoreElement.textContent = `${highscore}`;
+        }
     }
 
     function checkCollision() {
@@ -28,11 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    
+
+    //console.log(highest)
     function gameLoop() {
         checkCollision();
-        requestAnimationFrame(gameLoop);
+        requestAnimationFrame(gameLoop)
     }
+
+    // Initialize high score display
+    highScoreElement.textContent = `${highscore}`
 
     gameLoop();
 });

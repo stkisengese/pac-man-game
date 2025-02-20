@@ -156,7 +156,7 @@ const powerPelletPositions = [
     // });
     
     // Store game state information
-    window.gameState = {
+     window.gameState = {
         totalDots: numberOfDotsToShow,
         dotsRemaining: numberOfDotsToShow,
         dotPercentage: percentageToShow.toFixed(1),
