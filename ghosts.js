@@ -1,4 +1,4 @@
-import { mazeGrid, resetPacmanPosition } from './maze.js';
+import { mazeGrid, resetPacmanPosition, changePacmanImage } from './maze.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     // Ghost configuration
@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 position: 'absolute',
                 width: '15px',
                 height: '15px',
-               // backgroundColor: config.color,
                 left: `${this.x}px`,
                 top: `${this.y}px`,
                 color: config.color,
@@ -52,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 transform: 'translate(-50%, -50%)',
                 zIndex: '900'
             });
-           // this.element.innerHTML = config.character;
         }
 
         getRandomDirection() {
@@ -194,23 +192,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let isImmune = false;
     let immunityTime = 2000; // 2 seconds immunity after collision
     let gameover=false
-    //resetPacman=false
-// let gstatege=GameState()
-// console.log(gstatege)
-//console.log(PACMAN_START_POS)
+  
     function handleCollision() {
         if (isImmune) return;
         
         lives--;
         console.log(`Collision! Lives remaining: ${lives}`);
         
-    //    // Reset Pac-Man position
-    //     const pacman = document.getElementById('pacman');
-    //     if (pacman) {
-    //         pacman.style.display='none'
-    //         pacman.style.left = `${PACMAN_START_POS.x}px`;
-    //         pacman.style.top = `${PACMAN_START_POS.y}px`;
-    //     }
     
         // Reset all ghosts
         Object.values(ghosts).forEach(ghost => ghost.reset());
@@ -226,11 +214,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 800); // Duration of fade-in and fade-out animation
             
         }
+
+         // Reset Pac-Man position
         setTimeout(() => { 
             resetPacmanPosition()
             pacman.style.display='block' }, 900);
 
-        if (lives === -1) {
+            
+        if (lives === -1) { // Lives are over
             const gameOverAlert= document.querySelector('.game-over')
             gameOverAlert.style.display='block'
             overlay.style.opacity='1';

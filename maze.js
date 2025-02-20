@@ -48,7 +48,6 @@ const POWER_PELLET_POINTS = 50; // Points for power pellets
 
 function getRandomDotPercentage() {
     return 100
-   // return Math.random() * (85 - 75) + 75;
 }
 
 function countPossibleDotPositions() {
@@ -60,7 +59,7 @@ function renderRandomDots() {
     
     const totalPossibleDots = countPossibleDotPositions();
     const percentageToShow = getRandomDotPercentage();
-    const numberOfDotsToShow = Math.floor(totalPossibleDots * (percentageToShow / 100));
+    const numberOfDotsToShow = Math.floor(totalPossibleDots * 1);
     
     // Create array of all possible positions
     const allPositions = [];
@@ -306,6 +305,13 @@ document.head.appendChild(style);
         pacman.style.left = `${x}px`;
         pacman.style.top = `${y}px`;
         pacman.style.transform = `translate(-50%, -50%) rotate(0deg)`;
+    }
+
+    export function changePacmanImage(newSrc) {
+        const pacmanImg = document.getElementById('pacman-img');
+        if (pacmanImg) {
+            pacmanImg.src = newSrc;
+        }
     }
 
     function isValidMove(gridX, gridY) {

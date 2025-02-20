@@ -65,11 +65,15 @@ body {
     /* background-color: yellow; */
     /* border-radius: 50%; */
 }
+
 .column_1,.column_2{ /*for the scores */
     margin: 0.625rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+.column_1 {
+    margin-top: 2rem;
 }
 .column_3{ /*for the pacman lives */
     margin: 0.625rem;
@@ -96,30 +100,28 @@ body {
     z-index: 1000; /* Ensure it covers the game UI */
 }
 .game-over {
-    margin-top: 0rem;
-    font-size: 30px;
+    margin-top: 30rem;
+    font-size: 20px;
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 5px;
     color: red;
     display: none;
+    animation: gameOverFlash 0.8s 3;
 }
-
-
-/* Power Pellet Animation CSS */
-@keyframes powerPelletFlash {
+/* Game over animation */
+@keyframes gameOverFlash { 
     0%, 100% { opacity: 1; }
     50% { opacity: 0.3; }
   }
-  
+
   .power-pellet {
     animation: powerPelletFlash 0.3s infinite;
     
   }
   
-  /* Optional: Add a subtle size pulse for more visual impact
-  @keyframes powerPelletPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
+/* Power Pellet Animation */
+@keyframes powerPelletFlash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
   }
-   */
