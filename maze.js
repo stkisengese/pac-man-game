@@ -3,7 +3,7 @@ window.onload = function() {
     renderRandomDots();
 };
 
-
+// 4 and 1 for paths(4 without pellets), 0 for walls,3 for ghost house,2 for ghost house door
 export const mazeGrid = 
     [
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -16,15 +16,15 @@ export const mazeGrid =
         [0,1,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0],
         [0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,0],
         [0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0],
-        [0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0],
-        [0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0],
-        [0,0,0,0,0,0,1,0,0,1,0,0,0,0,2,0,0,0,1,0,0,1,0,0,0,0,0,0],
-        [0,0,0,0,0,0,1,0,0,1,0,0,0,0,2,0,0,0,1,0,0,1,0,0,0,0,0,0],
-        [1,1,1,1,1,1,1,1,1,1,0,0,3,3,3,3,3,0,1,1,1,1,1,1,1,1,1,1],
-        [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
-        [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
-        [0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0],
-        [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,0,0,0,4,0,0,4,0,0,0,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,4,4,4,4,4,4,4,4,4,4,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,4,0,0,0,0,2,0,0,0,4,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,4,0,0,0,0,2,0,0,0,4,0,0,1,0,0,0,0,0,0],
+        [4,4,4,4,4,4,1,4,4,4,0,0,3,3,3,3,3,0,4,4,4,1,4,4,4,4,4,4],
+        [0,0,0,0,0,0,1,0,0,4,0,0,0,0,0,0,0,0,4,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,4,0,0,0,0,0,0,0,0,4,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,4,4,4,4,4,4,4,4,4,4,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,4,0,0,0,0,0,0,0,0,4,0,0,1,0,0,0,0,0,0],
         [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
         [0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0],
         [0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
@@ -51,7 +51,7 @@ function getRandomDotPercentage() {
 }
 
 function countPossibleDotPositions() {
-    return mazeGrid.flat().filter(cell => cell === 1).length;
+    return mazeGrid.flat().filter(cell => cell === 1 || cell===4).length;
 }
 
 function renderRandomDots() {
@@ -65,7 +65,7 @@ function renderRandomDots() {
     const allPositions = [];
     mazeGrid.forEach((row, rowIndex) => {
         row.forEach((cell, colIndex) => {
-            if (cell === 1) {
+            if (cell === 1 ) {
                 allPositions.push({ row: rowIndex, col: colIndex });
             }
         });
@@ -252,7 +252,7 @@ document.head.appendChild(style);
         
     //     mazeGrid.forEach((row, rowIndex) => {
     //         row.forEach((cell, colIndex) => {
-    //             if (cell === 1) {  // If it's a path
+    //             if (cell === 1 || cell===4) {  // If it's a path
     //                 const pathCell = document.createElement('div');
     //                 pathCell.style.position = 'absolute';
     //                 pathCell.style.width = `${CELL_SIZE}px`;
@@ -269,6 +269,8 @@ document.head.appendChild(style);
         
     //     document.querySelector('.maze').appendChild(overlay);
     // }
+    // // Create debug overlay
+    //    createDebugOverlay();
 
      export function initializePacman() {
         Object.assign(pacman.style, {
@@ -283,12 +285,7 @@ document.head.appendChild(style);
             transform: 'translate(-50%, -50%)',
             transition: 'transform 0.1s ease',
             zIndex: '1000'  // Ensure Pac-Man appears above debug overlay
-        });
-        
-       // pacman.innerHTML = '&#9786;';
-        
-        // Create debug overlay
-     //   createDebugOverlay();
+        });        
     }
 
      // Reset to starting position after death

@@ -73,7 +73,8 @@ document.addEventListener("DOMContentLoaded", () => {
             // Allow movement on paths (1), ghost house entrance (2) and ghost house (3)
             return mazeGrid[gridY][gridX] === 1 || 
                    mazeGrid[gridY][gridX] === 2 || 
-                   mazeGrid[gridY][gridX] === 3;
+                   mazeGrid[gridY][gridX] === 3 ||
+                   mazeGrid[gridY][gridX] === 4;
         }
 
         handleTunnel(gridX, gridY) {
