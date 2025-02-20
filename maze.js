@@ -51,7 +51,7 @@ function getRandomDotPercentage() {
 }
 
 function countPossibleDotPositions() {
-    return mazeGrid.flat().filter(cell => cell === 1 || cell===4).length;
+    return mazeGrid.flat().filter(cell => cell === 1).length;
 }
 
 function renderRandomDots() {
