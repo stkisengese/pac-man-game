@@ -1,4 +1,5 @@
 
+
 window.onload = function() {
     renderRandomDots();
 };
@@ -433,3 +434,4 @@ document.addEventListener("DOMContentLoaded", () => {
     initializePacman();
     gameLoop();
 });
+// import { isGamePaused, initPauseSystem } from './pauseMenu.js';

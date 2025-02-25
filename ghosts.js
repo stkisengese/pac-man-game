@@ -1,4 +1,5 @@
 import { mazeGrid, resetPacmanPosition, changePacmanImage } from './maze.js';
+// import { isGamePaused, initPauseSystem } from './pauseMenu.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     // Ghost configuration
@@ -284,3 +285,4 @@ document.addEventListener("DOMContentLoaded", () => {
         // TODO set game over text to visible
     }
 });
+// In ghost.js, modify the ghostLoop function:
