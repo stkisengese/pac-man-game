@@ -80,8 +80,8 @@ function togglePause() {
         // Show pause menu with flex display for proper centering
         pauseMenu.style.display = 'flex';
         // Cancel any ongoing animations
-        cancelAnimationFrame(window.pacmanAnimationId);
         cancelAnimationFrame(window.ghostAnimationId);
+        cancelAnimationFrame(window.pacmanAnimationId);
         // Pause any audio that might be playing
         pauseAudio();
     } else {

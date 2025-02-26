@@ -125,3 +125,53 @@ body {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.3; }
   }
+/* Pause Menu Styles */
+#pause-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(17, 203, 236, 0.7);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pause-content {
+    background-color: #0ba4eb;
+    border: 4px solid #0066ff;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    width: 300px;
+}
+
+.pause-content h2 {
+    color: #ffff00;
+    font-size: 36px;
+    margin-bottom: 20px;
+    font-family: 'Press Start 2P', cursive, sans-serif;
+}
+
+.pause-content button {
+    background-color: #0066ff;
+    color: white;
+    border:calc();
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive, sans-serif;
+    transition: background-color 0.3s;
+}
+
+.pause-content button:hover {
+    background-color: #0099ff;
+}
+
+.pause-content button:active {
+    background-color: #0033cc;
+}
