@@ -99,6 +99,15 @@ document.addEventListener("DOMContentLoaded", () => {
             return this.handleTunnel(nextX, nextY);
         }
 
+        getCurrentTarget(ghostId, pacmanX, pacmanY, pacmanDirection) {
+            if (this.mode === 'scatter') {
+                return this.scatterTargets[ghostId];
+            } else {
+                // Use the ghost's chase targeting
+                return ghosts[ghostId].calculateTarget(pacmanX, pacmanY, pacmanDirection);
+            }
+        }
+
         chooseNextDirection() {
             // Get current target based on mode
             const pacman = document.getElementById('pacman');
