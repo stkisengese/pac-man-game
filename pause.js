@@ -14,11 +14,11 @@ function createPauseMenu() {
          align-items: center; z-index: 1000;">
       <h2 style="color: yellow; font-family: 'Press Start 2P', cursive; margin-bottom: 20px;">PAUSED</h2>
       <button id="resumeButton" style="background-color: yellow; color: black; border: none; padding: 10px 20px; 
-              margin: 10px; cursor: pointer; font-family: 'Press Start 2P', cursive;">Resume</button>
+              margin: 10px; cursor: pointer; font-family: 'Press Start 2P',sans-serif, cursive;">Resume</button>
       <button id="restartButton" style="background-color: yellow; color: black; border: none; padding: 10px 20px; 
-              margin: 10px; cursor: pointer; font-family: 'Press Start 2P', cursive;">Restart</button>
+              margin: 10px; cursor: pointer; font-family: 'Press Start 2P', sans-serif, cursive;">Restart</button>
       <button id="quitButton" style="background-color: yellow; color: black; border: none; padding: 10px 20px; 
-              margin: 10px; cursor: pointer; font-family: 'Press Start 2P', cursive;">Quit</button>
+              margin: 10px; cursor: pointer; font-family: 'Press Start 2P', sans-serif, cursive;">Quit</button>
     </div>
     `;
 
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Also add a visible pause button for mobile compatibility
     const pauseButtonHTML = `<button id="pauseBtn" style="position: absolute; top: 10px; right: 10px; z-index: 999; 
                              background-color: yellow; color: black; border: none; padding: 10px 20px; 
-                             cursor: pointer; font-family: 'Press Start 2P', cursive;">⏸</button>`;
+                             cursor: pointer; font-family: 'Press Start 2P', sans-serif, cursive;">⏸</button>`;
     document.body.insertAdjacentHTML('beforeend', pauseButtonHTML);
 
     document.getElementById('pauseBtn').addEventListener('click', togglePause);
