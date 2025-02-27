@@ -375,17 +375,20 @@ import { isGamePaused } from './pause.js';
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    function gameLoop() {
-        if (!isGamePaused()) {
-            updatePacman()
-        }
-        // updatePacman();
-        requestAnimationFrame(gameLoop);
-    }
 
     initializePacman();
     gameLoop();
 });
+
+export function gameLoop() {
+    if (!isGamePaused()) {
+        updatePacman()
+    }
+
+    // updatePacman();
+    pacmanAnimationId = requestAnimationFrame(gameLoop);
+}
+
 document.addEventListener('gameRestart', () => {
     // Reset game state
     resetPacmanPosition();
