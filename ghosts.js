@@ -99,6 +99,77 @@ document.addEventListener("DOMContentLoaded", () => {
             return this.handleTunnel(nextX, nextY);
         }
 
+        calculateTarget(pacmanX, pacmanY, pacmanDirection) {
+            // Convert from pixel coordinates to grid coordinates
+            const pacmanGridX = Math.floor(pacmanX / CELL_SIZE);
+            const pacmanGridY = Math.floor(pacmanY / CELL_SIZE);
+
+            switch (this.id) {
+                case 'blinky': // Red ghost - directly targets Pacman
+                    return { x: pacmanGridX, y: pacmanGridY };
+
+                case 'pinky': // Pink ghost - targets 4 tiles ahead of Pacman
+                    let targetX = pacmanGridX;
+                    let targetY = pacmanGridY;
+
+                    // Calculate position 4 tiles ahead based on Pacman's direction
+                    switch (pacmanDirection) {
+                        case 'up':
+                            targetY -= 4;
+                            // Recreate the original game's bug: when Pacman faces up, Pinky targets 4 tiles up and 4 tiles left
+                            targetX -= 4;
+                            break;
+                        case 'down': targetY += 4; break;
+                        case 'left': targetX -= 4; break;
+                        case 'right': targetX += 4; break;
+                    }
+
+                    return { x: targetX, y: targetY };
+
+                case 'inky': // Cyan ghost - uses vector from Blinky to determine target
+                    let blinky = ghosts['blinky'];
+                    let blinkyGridX = Math.floor(blinky.x / CELL_SIZE);
+                    let blinkyGridY = Math.floor(blinky.y / CELL_SIZE);
+
+                    // First, get position 2 tiles ahead of Pacman
+                    let pivotX = pacmanGridX;
+                    let pivotY = pacmanGridY;
+
+                    switch (pacmanDirection) {
+                        case 'up':
+                            pivotY -= 2;
+                            // Same bug as Pinky
+                            pivotX -= 2;
+                            break;
+                        case 'down': pivotY += 2; break;
+                        case 'left': pivotX -= 2; break;
+                        case 'right': pivotX += 2; break;
+                    }
+
+                    // Then, calculate the vector from Blinky to this position and double it
+                    let vectorX = pivotX - blinkyGridX;
+                    let vectorY = pivotY - blinkyGridY;
+
+                    return {
+                        x: pivotX + vectorX,
+                        y: pivotY + vectorY
+                    };
+
+                case 'clyde': // Orange ghost - targets Pacman when far, scatters when close
+                    const distance = Math.sqrt(
+                        Math.pow(this.currentGridX - pacmanGridX, 2) +
+                        Math.pow(this.currentGridY - pacmanGridY, 2)
+                    );
+
+                    // If closer than 8 tiles, target scatter point (bottom-left corner)
+                    if (distance < 8) {
+                        return { x: 0, y: 30 }; // Adjust corner position as needed
+                    } else {
+                        return { x: pacmanGridX, y: pacmanGridY };
+                    }
+            }
+        }
+
         getCurrentTarget(ghostId, pacmanX, pacmanY, pacmanDirection) {
             if (this.mode === 'scatter') {
                 return this.scatterTargets[ghostId];
