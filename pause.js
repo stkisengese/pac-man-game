@@ -1,7 +1,11 @@
 // Create a pause state variable to track game status
 let isPaused = false;
-let animationId = null;
 
+import { gameLoop } from "./maze.js";
+import { ghostLoop } from "./ghosts.js";
+
+window.ghostAnimationId = null
+window.pacmanAnimationId = null
 // Create the pause menu HTML structure
 function createPauseMenu() {
     const pauseMenuHTML = `
@@ -17,7 +21,7 @@ function createPauseMenu() {
               margin: 10px; cursor: pointer; font-family: 'Press Start 2P', cursive;">Quit</button>
     </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', pauseMenuHTML);
 }
 
@@ -27,39 +31,39 @@ function setupPauseMenu() {
     if (!document.getElementById('pauseMenu')) {
         createPauseMenu();
     }
-    
+
     // Add event listener for ESC key to toggle pause
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') {
             togglePause();
         }
     });
-    
+
     // Get references to pause menu elements
     const pauseMenu = document.getElementById('pauseMenu');
     const resumeButton = document.getElementById('resumeButton');
     const restartButton = document.getElementById('restartButton');
     const quitButton = document.getElementById('quitButton');
-    
+
     // Set up button event listeners
-    resumeButton.addEventListener('click', function() {
+    resumeButton.addEventListener('click', function () {
         togglePause(); // Resume game
     });
-    
-    restartButton.addEventListener('click', function() {
+
+    restartButton.addEventListener('click', function () {
         // Hide pause menu
         pauseMenu.style.display = 'none';
         isPaused = false;
-        
+
         // Reset game
         resetGame();
     });
-    
-    quitButton.addEventListener('click', function() {
+
+    quitButton.addEventListener('click', function () {
         // Hide pause menu
         pauseMenu.style.display = 'none';
         isPaused = false;
-        
+
         // Show main menu or reload page
         if (window.location.pathname.includes('index.html')) {
             // If we're on the main page, just reload
@@ -75,13 +79,13 @@ function setupPauseMenu() {
 function togglePause() {
     isPaused = !isPaused;
     const pauseMenu = document.getElementById('pauseMenu');
-    
+
     if (isPaused) {
         // Show pause menu with flex display for proper centering
         pauseMenu.style.display = 'flex';
         // Cancel any ongoing animations
-        cancelAnimationFrame(window.ghostAnimationId);
-        cancelAnimationFrame(window.pacmanAnimationId);
+        cancelAnimationFrame(ghostAnimationId);
+        cancelAnimationFrame(pacmanAnimationId);
         // Pause any audio that might be playing
         pauseAudio();
     } else {
@@ -120,14 +124,16 @@ function resumeAudio() {
 
 // Resume game loops
 function resumeGameLoops() {
+
+    console.log(pacmanAnimationId, ghostAnimationId)
     // Resume pacman game loop from maze.js
     if (typeof gameLoop === 'function') {
-        window.pacmanAnimationId = requestAnimationFrame(gameLoop);
+        pacmanAnimationId = requestAnimationFrame(gameLoop);
     }
-    
+
     // Resume ghost game loop from ghost.js
     if (typeof ghostLoop === 'function') {
-        window.ghostAnimationId = requestAnimationFrame(ghostLoop);
+        ghostAnimationId = requestAnimationFrame(ghostLoop);
     }
 }
 
@@ -137,7 +143,7 @@ function resetGame() {
     if (typeof resetPacmanPosition === 'function') {
         resetPacmanPosition();
     }
-    
+
     // Reset ghosts
     const ghosts = document.querySelectorAll('.ghost');
     ghosts.forEach(ghost => {
@@ -145,18 +151,18 @@ function resetGame() {
             ghost.reset();
         }
     });
-    
+
     // Reset dots if needed
     if (typeof renderRandomDots === 'function') {
         renderRandomDots();
     }
-    
+
     // Reset score
     const scoreElement = document.getElementById('score');
     if (scoreElement) {
         scoreElement.textContent = '0';
     }
-    
+
     // Resume game loops
     resumeGameLoops();
 }
@@ -168,7 +174,7 @@ export function isGamePaused() {
 
 // Function to modify your existing game loops to respect pause state
 export function modifyGameLoop(originalGameLoop) {
-    return function() {
+    return function () {
         if (!isPaused) {
             originalGameLoop();
         }
@@ -179,13 +185,13 @@ export function modifyGameLoop(originalGameLoop) {
 // Initialize pause menu system when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     setupPauseMenu();
-    
+
     // Also add a visible pause button for mobile compatibility
     const pauseButtonHTML = `<button id="pauseBtn" style="position: absolute; top: 10px; right: 10px; z-index: 999; 
                              background-color: yellow; color: black; border: none; padding: 10px 20px; 
                              cursor: pointer; font-family: 'Press Start 2P', cursive;">⏸</button>`;
     document.body.insertAdjacentHTML('beforeend', pauseButtonHTML);
-    
+
     document.getElementById('pauseBtn').addEventListener('click', togglePause);
 });
 
