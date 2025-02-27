@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
             this.isMoving = false;
             this.isVulnerable = false;
             this.speed = GHOST_SPEED;
-            
+
             this.initializeGhost(config);
         }
 
@@ -61,20 +61,20 @@ document.addEventListener("DOMContentLoaded", () => {
         isAtGridCenter() {
             const gridAlignedX = Math.round(this.x / CELL_SIZE) * CELL_SIZE + GHOST_POSITION_OFFSET.x;
             const gridAlignedY = Math.round(this.y / CELL_SIZE) * CELL_SIZE + GHOST_POSITION_OFFSET.y;
-            return Math.abs(this.x - gridAlignedX) < GRID_SNAP_THRESHOLD && 
-                   Math.abs(this.y - gridAlignedY) < GRID_SNAP_THRESHOLD;
+            return Math.abs(this.x - gridAlignedX) < GRID_SNAP_THRESHOLD &&
+                Math.abs(this.y - gridAlignedY) < GRID_SNAP_THRESHOLD;
         }
 
         isValidMove(gridX, gridY) {
-            if (gridY < 0 || gridY >= mazeGrid.length || 
+            if (gridY < 0 || gridY >= mazeGrid.length ||
                 gridX < 0 || gridX >= mazeGrid[0].length) {
                 return false;
             }
             // Allow movement on paths (1), ghost house entrance (2) and ghost house (3)
-            return mazeGrid[gridY][gridX] === 1 || 
-                   mazeGrid[gridY][gridX] === 2 || 
-                   mazeGrid[gridY][gridX] === 3 ||
-                   mazeGrid[gridY][gridX] === 4;
+            return mazeGrid[gridY][gridX] === 1 ||
+                mazeGrid[gridY][gridX] === 2 ||
+                mazeGrid[gridY][gridX] === 3 ||
+                mazeGrid[gridY][gridX] === 4;
         }
 
         handleTunnel(gridX, gridY) {
@@ -88,8 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
         getNextPosition(currentX, currentY, dir) {
             let nextX = currentX;
             let nextY = currentY;
-            
-            switch(dir) {
+
+            switch (dir) {
                 case "right": nextX++; break;
                 case "left": nextX--; break;
                 case "up": nextY--; break;
@@ -100,6 +100,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         chooseNextDirection() {
+            // Get current target based on mode
+            const pacman = document.getElementById('pacman');
+            const pacmanX = parseInt(pacman.style.left);
+            const pacmanY = parseInt(pacman.style.top);
+            const pacmanDirection = window.pacmanDirection; // Assume pacman direction is stored globally
+
+            const target = ghostManager.getCurrentTarget(
+                this.id, pacmanX, pacmanY, pacmanDirection
+            );
+
+            // Find possible directions at current intersection
             const possibleDirections = ['up', 'down', 'left', 'right'].filter(dir => {
                 const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, dir);
                 return this.isValidMove(nextPos.x, nextPos.y);
@@ -110,21 +121,48 @@ document.addEventListener("DOMContentLoaded", () => {
                 'up': 'down', 'down': 'up',
                 'left': 'right', 'right': 'left'
             };
-            const filteredDirections = possibleDirections.filter(dir => 
+
+            // Exception: Reverse direction when mode changes
+            if (this.shouldReverseDirection) {
+                this.shouldReverseDirection = false;
+                if (possibleDirections.includes(oppositeDir[this.direction])) {
+                    return oppositeDir[this.direction];
+                }
+            }
+
+            const filteredDirections = possibleDirections.filter(dir =>
                 dir !== oppositeDir[this.direction]
             );
 
-            if (filteredDirections.length > 0) {
-                return filteredDirections[Math.floor(Math.random() * filteredDirections.length)];
-            }
-            return possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
+            const validDirections = filteredDirections.length > 0 ?
+                filteredDirections : possibleDirections;
+
+            if (validDirections.length === 0) return this.direction;
+            if (validDirections.length === 1) return validDirections[0];
+
+            // Calculate which direction gets us closest to the target
+            return validDirections.reduce((bestDir, currentDir) => {
+                let nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, currentDir);
+                let currentDistance = Math.sqrt(
+                    Math.pow(nextPos.x - target.x, 2) +
+                    Math.pow(nextPos.y - target.y, 2)
+                );
+
+                let bestPos = this.getNextPosition(this.currentGridX, this.currentGridY, bestDir);
+                let bestDistance = Math.sqrt(
+                    Math.pow(bestPos.x - target.x, 2) +
+                    Math.pow(bestPos.y - target.y, 2)
+                );
+
+                return currentDistance < bestDistance ? currentDir : bestDir;
+            }, validDirections[0]);
         }
 
         makeVulnerable() {
             this.isVulnerable = true;
             this.element.style.color = 'blue';
             this.speed = GHOST_SPEED * 0.5; // Slower when vulnerable
-            
+
             setTimeout(() => {
                 this.isVulnerable = false;
                 this.element.style.color = GHOST_CONFIG[this.id].color;
@@ -143,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (this.isAtGridCenter()) {
                 this.currentGridX = Math.round((this.x - GHOST_POSITION_OFFSET.x) / CELL_SIZE);
                 this.currentGridY = Math.round((this.y - GHOST_POSITION_OFFSET.y) / CELL_SIZE);
-                
+
                 // Choose new direction at intersections
                 this.nextDirection = this.chooseNextDirection();
                 this.direction = this.nextDirection;
@@ -152,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, this.direction);
             if (this.isValidMove(nextPos.x, nextPos.y)) {
                 this.isMoving = true;
-                switch(this.direction) {
+                switch (this.direction) {
                     case "right": this.x += this.speed; break;
                     case "left": this.x -= this.speed; break;
                     case "up": this.y -= this.speed; break;
@@ -185,64 +223,65 @@ document.addEventListener("DOMContentLoaded", () => {
             this.isVulnerable = false;
             this.update(); // Immediately update position
         }
-        
+
     }
 
     // Add game state
     let lives = 2; //there are three lives. the last life is 0(for pacman life elemnet indexing)
     let isImmune = false;
     let immunityTime = 2000; // 2 seconds immunity after collision
-    let gameover=false
-  
+    let gameover = false
+
     function handleCollision() {
         if (isImmune) return;
-        
+
         lives--;
         console.log(`Collision! Lives remaining: ${lives}`);
-        
-    
+
+
         // Reset all ghosts
         Object.values(ghosts).forEach(ghost => ghost.reset());
-        
+
 
         // Apply fade-in effect to maze
         const overlay = document.getElementById('fade-overlay');
-        if (overlay && lives>-1) {
-            overlay.style.opacity='1';
-            overlay.style.backgroundColor='black'
+        if (overlay && lives > -1) {
+            overlay.style.opacity = '1';
+            overlay.style.backgroundColor = 'black'
             setTimeout(() => {
-                overlay.style.opacity='0';
+                overlay.style.opacity = '0';
             }, 800); // Duration of fade-in and fade-out animation
-            
+
         }
 
-         // Reset Pac-Man position
-        setTimeout(() => { 
+        // Reset Pac-Man position
+        setTimeout(() => {
             resetPacmanPosition()
-            pacman.style.display='block' }, 900);
+            pacman.style.display = 'block'
+        }, 900);
 
-            
+
         if (lives === -1) { // Lives are over
-            const gameOverAlert= document.querySelector('.game-over')
-            gameOverAlert.style.display='block'
-            overlay.style.opacity='1';
-            overlay.style.backgroundColor=''
+            const gameOverAlert = document.querySelector('.game-over')
+            gameOverAlert.style.display = 'block'
+            overlay.style.opacity = '1';
+            overlay.style.backgroundColor = ''
             console.log('Game Over!');
-            gameover=true
+            gameover = true
             return;
         }
-    
+
         // Temporary immunity after respawn
         isImmune = true;
         setTimeout(() => { isImmune = false; }, immunityTime);
-    
+
         // Remove or hide one life indicator
         const lifeElements = document.querySelectorAll('.pacman-life');
         if (lifeElements[lives]) {
             lifeElements[lives].style.visibility = 'hidden';
         }
     }
-    
+
 
     function updateGhosts() {
         const pacman = document.getElementById('pacman');
@@ -278,9 +317,9 @@ document.addEventListener("DOMContentLoaded", () => {
         requestAnimationFrame(ghostLoop);
     }
 
-    if (gameover==false){
+    if (gameover == false) {
         ghostLoop();
-    } else{
+    } else {
         // TODO set game over text to visible
     }
 });
