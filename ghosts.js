@@ -1,6 +1,59 @@
 import { mazeGrid, resetPacmanPosition, changePacmanImage } from './maze.js';
 
 document.addEventListener("DOMContentLoaded", () => {
+    class GhostManager {
+        constructor() {
+            this.mode = 'scatter';
+            this.modeTimer = 0;
+            this.modePatterns = [
+                { mode: 'scatter', duration: 7000 },  // 7 seconds scatter
+                { mode: 'chase', duration: 20000 },   // 20 seconds chase
+                { mode: 'scatter', duration: 7000 },  // 7 seconds scatter
+                { mode: 'chase', duration: 20000 },   // 20 seconds chase
+                { mode: 'scatter', duration: 5000 },  // 5 seconds scatter
+                { mode: 'chase', duration: 20000 },   // 20 seconds chase
+                { mode: 'scatter', duration: 5000 },  // 5 seconds scatter
+                { mode: 'chase', duration: -1 }       // Chase indefinitely
+            ];
+            this.currentPatternIndex = 0;
+
+            this.scatterTargets = {
+                'blinky': { x: 25, y: 0 },  // Top-right
+                'pinky': { x: 2, y: 0 },    // Top-left
+                'inky': { x: 27, y: 30 },   // Bottom-right
+                'clyde': { x: 0, y: 30 }    // Bottom-left
+            };
+        }
+
+        update(deltaTime) {
+            // Update mode timer
+            this.modeTimer += deltaTime;
+
+            const currentPattern = this.modePatterns[this.currentPatternIndex];
+
+            // Check if it's time to switch modes
+            if (currentPattern.duration > 0 && this.modeTimer >= currentPattern.duration) {
+                this.modeTimer = 0;
+                this.currentPatternIndex = (this.currentPatternIndex + 1) % this.modePatterns.length;
+                this.mode = this.modePatterns[this.currentPatternIndex].mode;
+
+                // Signal ghosts to reverse direction when mode changes
+                document.dispatchEvent(new CustomEvent('ghostModeChanged'));
+            }
+        }
+
+        getCurrentTarget(ghostId, pacmanX, pacmanY, pacmanDirection) {
+            if (this.mode === 'scatter') {
+                return this.scatterTargets[ghostId];
+            } else {
+                // Use the ghost's chase targeting
+                return ghosts[ghostId].calculateTarget(pacmanX, pacmanY, pacmanDirection);
+            }
+        }
+    }
+    // Initialize ghost manager
+    const ghostManager = new GhostManager();
+
     // Ghost configuration
     const GHOST_CONFIG = {
         blinky: { startX: 14, startY: 11, color: 'red', character: '👻' },
@@ -170,14 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        getCurrentTarget(ghostId, pacmanX, pacmanY, pacmanDirection) {
-            if (this.mode === 'scatter') {
-                return this.scatterTargets[ghostId];
-            } else {
-                // Use the ghost's chase targeting
-                return ghosts[ghostId].calculateTarget(pacmanX, pacmanY, pacmanDirection);
-            }
-        }
 
         chooseNextDirection() {
             // Get current target based on mode
@@ -242,11 +287,26 @@ document.addEventListener("DOMContentLoaded", () => {
             this.isVulnerable = true;
             this.element.style.color = 'blue';
             this.speed = GHOST_SPEED * 0.5; // Slower when vulnerable
+            this.previousMode = ghostManager.mode;
+            ghostManager.mode = 'frightened';
+
+            // When frightened, reverse direction immediately
+            this.shouldReverseDirection = true;
+
+            // Clear existing timer if there is one
+            if (this.vulnerableTimer) clearTimeout(this.vulnerableTimer);
+
+            // Set up flashing animation near the end of frightened mode
+            this.vulnerableTimer = setTimeout(() => {
+                this.startFlashing();
+            }, 7000); // Start flashing 3 seconds before vulnerability ends
 
             setTimeout(() => {
                 this.isVulnerable = false;
                 this.element.style.color = GHOST_CONFIG[this.id].color;
                 this.speed = GHOST_SPEED;
+                ghostManager.mode = this.previousMode;
+                this.stopFlashing();
             }, 10000); // 10 seconds of vulnerability
         }
 
@@ -391,13 +451,26 @@ document.addEventListener("DOMContentLoaded", () => {
         Object.values(ghosts).forEach(ghost => ghost.makeVulnerable());
     });
 
+    let lastTime = 0;
+
     // Game loop for ghost movement
-    function ghostLoop() {
-        updateGhosts();
-        requestAnimationFrame(ghostLoop);
+    function ghostLoop(timestamp) {
+        const deltaTime = timestamp - lastTime;
+        lastTime = timestamp;
+
+        // Update ghost manager
+        ghostManager.update(deltaTime);
+
+        // Update ghosts
+        updateGhosts(deltaTime);
+
+        if (!gameover) {
+            requestAnimationFrame(ghostLoop);
+        }
     }
 
     if (gameover == false) {
+        lastTime = performance.now()
         ghostLoop();
     } else {
         // TODO set game over text to visible
