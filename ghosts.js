@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
             this.mode = 'scatter';
             this.modeTimer = 0;
             this.modePatterns = [
-                { mode: 'scatter', duration: 7000 },  // 7 seconds scatter
+                { mode: 'scatter', duration: 20000 },  // 7 seconds scatter
                 { mode: 'chase', duration: 20000 },   // 20 seconds chase
                 { mode: 'scatter', duration: 7000 },  // 7 seconds scatter
                 { mode: 'chase', duration: 20000 },   // 20 seconds chase
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
         x: 4,  // Horizontal offset to center ghost in path
         y: -7  // Vertical offset to center ghost in path
     };
-    const GHOST_SPEED = 1;
+    const GHOST_SPEED = 1.4;
     const GRID_SNAP_THRESHOLD = 1;
 
     const PACMAN_START_POS = {
