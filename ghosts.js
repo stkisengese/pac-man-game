@@ -31,6 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const currentPattern = this.modePatterns[this.currentPatternIndex];
 
+            console.log(`Current mode: ${this.mode}, Timer: ${this.modeTimer}, Duration: ${currentPattern.duration}`);
+    
             // Check if it's time to switch modes
             if (currentPattern.duration > 0 && this.modeTimer >= currentPattern.duration) {
                 this.modeTimer = 0;
@@ -88,8 +90,13 @@ document.addEventListener("DOMContentLoaded", () => {
             this.isMoving = false;
             this.isVulnerable = false;
             this.speed = GHOST_SPEED;
+            this.shouldReverseDirection = false; // For reversing direction on mode change
+            this.vulnerableTimer = null;
+            this.flashingInterval = null;
+            this.previousMode = null;
 
             this.initializeGhost(config);
+            this.setupModeChangeListener();
         }
 
         initializeGhost(config) {
@@ -103,6 +110,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 visibility: 'visible',
                 transform: 'translate(-50%, -50%)',
                 zIndex: '900'
+            });
+        }
+
+        setupModeChangeListener() {
+            document.addEventListener('ghostModeChanged', () => {
+                // Reverse direction when mode changes, but not during frightened mode
+                if (!this.isVulnerable) {
+                    this.shouldReverseDirection = true;
+                }
             });
         }
 
@@ -283,6 +299,28 @@ document.addEventListener("DOMContentLoaded", () => {
             }, validDirections[0]);
         }
 
+        // In the frightened mode, choose random directions
+        chooseNextDirectionFrightened() {
+            const possibleDirections = ['up', 'down', 'left', 'right'].filter(dir => {
+                const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, dir);
+                return this.isValidMove(nextPos.x, nextPos.y);
+            });
+
+            const oppositeDir = {
+                'up': 'down', 'down': 'up',
+                'left': 'right', 'right': 'left'
+            };
+
+            const filteredDirections = possibleDirections.filter(dir =>
+                dir !== oppositeDir[this.direction]
+            );
+
+            if (filteredDirections.length > 0) {
+                return filteredDirections[Math.floor(Math.random() * filteredDirections.length)];
+            }
+            return possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
+        }
+
         makeVulnerable() {
             this.isVulnerable = true;
             this.element.style.color = 'blue';
@@ -366,6 +404,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+    // Initialize ghosts
+    const ghosts = {};
+    for (const [id, config] of Object.entries(GHOST_CONFIG)) {
+        ghosts[id] = new Ghost(id, config);
+    }
+
+    // Add event listener for mode changes
+    document.addEventListener('ghostModeChanged', () => {
+        Object.values(ghosts).forEach(ghost => {
+            ghost.shouldReverseDirection = true;
+        });
+    }); 
+
     // Add game state
     let lives = 2; //there are three lives. the last life is 0(for pacman life elemnet indexing)
     let isImmune = false;
@@ -440,12 +491,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Initialize ghosts
-    const ghosts = {};
-    for (const [id, config] of Object.entries(GHOST_CONFIG)) {
-        ghosts[id] = new Ghost(id, config);
-    }
-
     // Handle power pellet collection
     document.addEventListener('powerPelletCollected', () => {
         Object.values(ghosts).forEach(ghost => ghost.makeVulnerable());
@@ -457,7 +502,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function ghostLoop(timestamp) {
         const deltaTime = timestamp - lastTime;
         lastTime = timestamp;
-
+       // console.log(`DeltaTime: ${deltaTime}`);
         // Update ghost manager
         ghostManager.update(deltaTime);
 
