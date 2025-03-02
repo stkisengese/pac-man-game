@@ -38,7 +38,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.modeTimer = 0;
                 this.currentPatternIndex = (this.currentPatternIndex + 1) % this.modePatterns.length;
                 this.mode = this.modePatterns[this.currentPatternIndex].mode;
-
+    
+                // Log the mode change
+                console.log(`Mode changed to: ${this.mode}`);
+    
+                // Update the mode display on screen (if debugging)
+                const modeDisplay = document.getElementById('modeDisplay');
+                if (modeDisplay) {
+                    modeDisplay.innerText = `Mode: ${this.mode}`;
+                }
+    
                 // Signal ghosts to reverse direction when mode changes
                 document.dispatchEvent(new CustomEvent('ghostModeChanged'));
             }
