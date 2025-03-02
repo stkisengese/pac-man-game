@@ -535,10 +535,5 @@ document.addEventListener("DOMContentLoaded", () => {
             requestAnimationFrame(ghostLoop);
         }
     }
-    if (gameover == false) {
-        lastGhostLoopTime = performance.now();
-        ghostLoop();
-    } else {
-        // TODO set game over text to visible
-    }
+    ghostLoop(performance.now());
 });
