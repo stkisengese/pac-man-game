@@ -357,6 +357,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 10000); // 10 seconds of vulnerability
         }
 
+        startFlashing() {
+            this.flashingInterval = setInterval(() => {
+                this.element.style.color = this.element.style.color === 'blue' ?
+                    'white' : 'blue';
+            }, 250); // Flash every 250ms
+        }
+
+        stopFlashing() {
+            if (this.flashingInterval) {
+                clearInterval(this.flashingInterval);
+                this.flashingInterval = null;
+            }
+        }
+
         checkCollision(pacmanX, pacmanY) {
             const collisionThreshold = CELL_SIZE / 2;
             const dx = Math.abs(this.x - pacmanX);
