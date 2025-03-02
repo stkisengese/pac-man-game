@@ -496,7 +496,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
     function updateGhosts() {
         const pacman = document.getElementById('pacman');
         if (!pacman) return;
@@ -519,13 +518,13 @@ document.addEventListener("DOMContentLoaded", () => {
         Object.values(ghosts).forEach(ghost => ghost.makeVulnerable());
     });
 
-    let lastTime = 0;
+    let lastGhostLoopTime = 0; // track time for deltaTimme in ghostLoop
 
     // Game loop for ghost movement
     function ghostLoop(timestamp) {
-        const deltaTime = timestamp - lastTime;
-        lastTime = timestamp;
-       // console.log(`DeltaTime: ${deltaTime}`);
+        const deltaTime = timestamp - lastGhostLoopTime;
+        lastGhostLoopTime = timestamp;
+
         // Update ghost manager
         ghostManager.update(deltaTime);
 
@@ -536,9 +535,8 @@ document.addEventListener("DOMContentLoaded", () => {
             requestAnimationFrame(ghostLoop);
         }
     }
-
     if (gameover == false) {
-        lastTime = performance.now()
+        lastGhostLoopTime = performance.now();
         ghostLoop();
     } else {
         // TODO set game over text to visible
