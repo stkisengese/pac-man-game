@@ -265,7 +265,7 @@ function isValidMove(gridX, gridY) {
         gridX < 0 || gridX >= mazeGrid[0].length) {
         return false;
     }
-    return mazeGrid[gridY][gridX] === 1;
+    return mazeGrid[gridY][gridX] === 1 || mazeGrid[gridY][gridX] === 4;
 }
 
 function handleTunnel(gridX, gridY) {
