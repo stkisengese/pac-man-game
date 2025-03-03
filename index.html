@@ -10,41 +10,45 @@
 </head>
 
 <body>
-   
+
     <div id="game-container">
-    
-    <div id="game-ui" class="game-ui">
-    <div id="fade-overlay"><h1 class="game-over">Game Over</h1></div>  
-        <div id="row-top" class="row-top">
-            <div class='column_1'>
-                <div class='points'>POINTS</div>
-                <div id='score'>0</div>
+
+        <div id="game-ui" class="game-ui">
+            <div id="fade-overlay">
+                <h1 class="game-over">Game Over</h1>
             </div>
-            <div class='column_2'>
-                <div class="high-score">HIGH SCORE</div>
-                <div id='high-score-display'>0</div>
+            <div id="row-top" class="row-top">
+                <div class='column_1'>
+                    <div class='points'>POINTS</div>
+                    <div id='score'>0</div>
+                </div>
+                <div class='column_2'>
+                    <div class="high-score">HIGH SCORE</div>
+                    <div id='high-score-display'>0</div>
+                </div>
+            </div>
+            <div id="maze" class="maze">
+                <img id="maze-img" class="maze-img" src="assets/maze/maze_blue.svg" alt="maze">
+                <div id="dot-container"></div>
+                <p id='pacman' class='pacman'> <img id="pacman-img" src="assets/sprites/pacman.svg" alt=""></p>
+                <p id='pacman-arrow' class='pacman'></p>
+                <p id='clyde' class='ghost'><img src="assets/sprites/ghost_clyde.svg" alt=""></p>
+                <p id='inky' class='ghost'><img src="assets/sprites/ghost_inky.svg" alt=""></p>
+                <p id='pinky' class='ghost'><img src="assets/sprites/ghost_pinky.svg" alt=""></p>
+                <p id='blinky' class='ghost'><img src="assets/sprites/ghost_blinky.svg" alt=""></p>
+                </p>
+            </div>
+            <div class="column_3">
+                <p id='pacman-life' class='pacman-life'><img src="favicon.ico" alt=""></p>
+                <p id='pacman-life' class='pacman-life'><img src="favicon.ico" alt=""></p>
             </div>
         </div>
-        <div id="maze" class="maze">
-            <img id="maze-img" class="maze-img" src="assets/maze/maze_blue.svg" alt="maze">
-            <div id="dot-container"></div>
-            <p id='pacman' class='pacman'> <img id="pacman-img" src="assets/sprites/pacman.svg" alt=""></p>
-            <p id='pacman-arrow' class='pacman'></p>
-            <p id='clyde' class='ghost'><img src="assets/sprites/ghost_clyde.svg" alt=""></p>
-            <p id='inky' class='ghost'><img src="assets/sprites/ghost_inky.svg" alt=""></p>
-            <p id='pinky' class='ghost'><img src="assets/sprites/ghost_pinky.svg" alt=""></p>
-            <p id='blinky' class='ghost'><img src="assets/sprites/ghost_blinky.svg" alt=""></p></p>
-        </div>
-        <div class="column_3">
-            <p id='pacman-life' class='pacman-life'><img src="favicon.ico" alt=""></p>
-            <p id='pacman-life' class='pacman-life'><img src="favicon.ico" alt=""></p>
-        </div>
-    </div>
     </div>
     <script src="gamestate.js" type="module"></script>
-    <script src="maze.js" type="module"></script>
     <script src="score.js" type="module"></script>
-     <script src="ghosts.js" type="module"></script>
+    <script src="ghosts.js" type="module"></script>
+    <script src="pause.js" type="module"></script>
+    <script src="maze.js" type="module"></script>
 </body>
 
 </html>
