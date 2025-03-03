@@ -12,13 +12,13 @@ function createPauseMenu() {
     <div id="pauseMenu" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
          background-color: rgba(0, 0, 0, 0.8); flex-direction: column; justify-content: center; 
          align-items: center; z-index: 1000;">
-      <h2 style="color: yellow; font-family: 'Press Start 2P', cursive; margin-bottom: 20px;">PAUSED</h2>
+      <h2 style="color: yellow; font-family: 'Press Start 2P Regular', sans-serif, cursive; margin-bottom: 20px;">PAUSED</h2>
       <button id="resumeButton" style="background-color: yellow; color: black; border: none; padding: 10px 20px; 
-              margin: 10px; cursor: pointer; font-family: 'Press Start 2P',sans-serif, cursive;">Resume</button>
+              margin: 10px; cursor: pointer; font-family: 'Press Start 2P Regular', sans-serif, cursive;">Resume</button>
       <button id="restartButton" style="background-color: yellow; color: black; border: none; padding: 10px 20px; 
-              margin: 10px; cursor: pointer; font-family: 'Press Start 2P', sans-serif, cursive;">Restart</button>
+              margin: 10px; cursor: pointer; font-family: 'Press Start 2P Regular', sans-serif, cursive;">Restart</button>
       <button id="quitButton" style="background-color: yellow; color: black; border: none; padding: 10px 20px; 
-              margin: 10px; cursor: pointer; font-family: 'Press Start 2P', sans-serif, cursive;">Quit</button>
+              margin: 10px; cursor: pointer; font-family: 'Press Start 2P Regular', sans-serif, cursive;">Quit</button>
     </div>
     `;
 
