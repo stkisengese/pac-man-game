@@ -108,7 +108,7 @@ function renderRandomDots() {
         dot.style.width = `${dotSize}px`;
         dot.style.height = `${dotSize}px`;
         dot.style.position = "absolute";
-        dot.style.backgroundColor = "yellow";
+        dot.style.backgroundColor = "pink";
         // dot.style.borderRadius = "50%";
         dot.style.top = `${pos.row * cellSize + cellSize / 2 - dotSize / 2}px`;
         dot.style.left = `${pos.col * cellSize + cellSize / 2 - dotSize / 2}px`;
