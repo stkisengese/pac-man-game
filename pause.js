@@ -1,7 +1,7 @@
 // Create a pause state variable to track game status
 let isPaused = false;
 
-import { gameLoop } from "./maze.js";
+import { gameLoop, resetPacmanPosition } from "./maze.js";
 import { ghostLoop } from "./ghosts.js";
 
 window.ghostAnimationId = null
@@ -165,6 +165,7 @@ function resetGame() {
 
     // Resume game loops
     resumeGameLoops();
+    // resetPacmanPosition();
 }
 
 // Function to check if game is paused - can be used by other scripts
