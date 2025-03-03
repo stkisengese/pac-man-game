@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
             this.mode = 'scatter';
             this.modeTimer = 0;
             this.modePatterns = [
-                { mode: 'scatter', duration: 20000 },  // 7 seconds scatter
+                { mode: 'scatter', duration: 10000 },  // 10 seconds scatter
                 { mode: 'chase', duration: 20000 },   // 20 seconds chase
                 { mode: 'scatter', duration: 7000 },  // 7 seconds scatter
                 { mode: 'chase', duration: 20000 },   // 20 seconds chase
@@ -26,6 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         update(deltaTime) {
+            // Skip updating if in frightened mode (handled by ghost timers)
+            if (this.mode === 'frightened') return;
             // Update mode timer
             this.modeTimer += deltaTime;
 
@@ -56,10 +58,22 @@ document.addEventListener("DOMContentLoaded", () => {
         getCurrentTarget(ghostId, pacmanX, pacmanY, pacmanDirection) {
             if (this.mode === 'scatter') {
                 return this.scatterTargets[ghostId];
+            } else if (this.mode === 'frightened') {
+                // No specific target in frightened mode (random movement)
+                return null;
             } else {
                 // Use the ghost's chase targeting
                 return ghosts[ghostId].calculateTarget(pacmanX, pacmanY, pacmanDirection);
             }
+        }
+
+        setFrightenedMode() {
+            this.previousMode = this.mode;
+            this.mode = 'frightened';
+        }
+        
+        revertFromFrightenedMode() {
+            this.mode = this.previousMode || 'chase';
         }
     }
     // Initialize ghost manager
@@ -254,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const pacman = document.getElementById('pacman');
             const pacmanX = parseInt(pacman.style.left);
             const pacmanY = parseInt(pacman.style.top);
-            const pacmanDirection = window.pacmanDirection; // Assume pacman direction is stored globally
+            const pacmanDirection = window.pacmanDirection || 'right'; // Assume pacman direction is stored globally
 
             const target = ghostManager.getCurrentTarget(
                 this.id, pacmanX, pacmanY, pacmanDirection
@@ -289,6 +303,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (validDirections.length === 0) return this.direction;
             if (validDirections.length === 1) return validDirections[0];
+
+            // In frightened mode, choose randomly
+            if (ghostManager.mode === 'frightened') {
+                return validDirections[Math.floor(Math.random() * validDirections.length)];
+            }
 
             // Calculate which direction gets us closest to the target
             return validDirections.reduce((bestDir, currentDir) => {
@@ -335,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
             this.element.style.color = 'blue';
             this.speed = GHOST_SPEED * 0.5; // Slower when vulnerable
             this.previousMode = ghostManager.mode;
-            ghostManager.mode = 'frightened';
+            ghostManager.mode = setFrightenedMode();
 
             // When frightened, reverse direction immediately
             this.shouldReverseDirection = true;
