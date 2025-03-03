@@ -1,4 +1,4 @@
-
+import {gameover} from "./ghosts.js"
 
 window.onload = function () {
     renderRandomDots();
@@ -162,6 +162,11 @@ export function collectDot(dotElement) {
             // You can trigger ghost vulnerability here
             document.dispatchEvent(new CustomEvent('powerPelletCollected'));
         }
+        if (window.gameState.dotsRemaining === 0) {
+            // document.dispatchEvent(new CustomEvent('allDotsCollected'));
+            resetDots();
+        }
+        
 
         dotElement.remove();
         return points;
@@ -384,7 +389,10 @@ export function gameLoop() {
     if (!isGamePaused()) {
         updatePacman()
     }
-
+    if (gameover == true) {
+        cancelAnimationFrame(pacmanAnimationId)
+        return
+    }
     // updatePacman();
     pacmanAnimationId = requestAnimationFrame(gameLoop);
 }
