@@ -7,7 +7,7 @@ const ghosts = {};
 let lives = 2; //there are three lives. the last life is 0(for pacman life elemnet indexing)
 let isImmune = false;
 let immunityTime = 2000; // 2 seconds immunity after collision
-let gameover = false
+export let gameover = false
 
 
 
@@ -218,12 +218,18 @@ document.addEventListener("DOMContentLoaded", () => {
         ghostLoop();
     } else {
         // TODO set game over text to visible
+        
     }
 });
 // Game loop for ghost movement
 export function ghostLoop() {
     updateGhosts();
+    if (gameover == true) {
+        cancelAnimationFrame(ghostAnimationId)
+        return
+    }
     ghostAnimationId = requestAnimationFrame(ghostLoop);
+    
 }
 
 function updateGhosts() {
