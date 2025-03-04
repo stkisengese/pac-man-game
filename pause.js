@@ -15,8 +15,6 @@ function createPauseMenu() {
       <h2 style="color: yellow; font-family: 'Press Start 2P Regular', sans-serif, cursive; margin-bottom: 20px;">PAUSED</h2>
       <button id="resumeButton" style="background-color: yellow; color: black; border: none; padding: 10px 20px; 
               margin: 10px; cursor: pointer; font-family: 'Press Start 2P Regular', sans-serif, cursive;">Resume</button>
-      <button id="restartButton" style="background-color: yellow; color: black; border: none; padding: 10px 20px; 
-              margin: 10px; cursor: pointer; font-family: 'Press Start 2P Regular', sans-serif, cursive;">Restart</button>
       <button id="quitButton" style="background-color: yellow; color: black; border: none; padding: 10px 20px; 
               margin: 10px; cursor: pointer; font-family: 'Press Start 2P Regular', sans-serif, cursive;">Quit</button>
     </div>
@@ -42,7 +40,7 @@ function setupPauseMenu() {
     // Get references to pause menu elements
     const pauseMenu = document.getElementById('pauseMenu');
     const resumeButton = document.getElementById('resumeButton');
-    const restartButton = document.getElementById('restartButton');
+    // const restartButton = document.getElementById('restartButton');
     const quitButton = document.getElementById('quitButton');
 
     // Set up button event listeners
@@ -50,14 +48,14 @@ function setupPauseMenu() {
         togglePause(); // Resume game
     });
 
-    restartButton.addEventListener('click', function () {
-        // Hide pause menu
-        pauseMenu.style.display = 'none';
-        isPaused = false;
+    // restartButton.addEventListener('click', function () {
+    //     // Hide pause menu
+    //     pauseMenu.style.display = 'none';
+    //     isPaused = false;
 
-        // Reset game
-        resetGame();
-    });
+    //     // Reset game
+    //     resetGame();
+    // });
 
     quitButton.addEventListener('click', function () {
         // Hide pause menu
