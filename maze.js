@@ -1,5 +1,6 @@
 import {gameover} from "./ghosts.js"
 
+
 window.onload = function () {
     renderRandomDots();
 };
