@@ -9,7 +9,7 @@ export let lives = 2; //there are three lives. the last life is 0(for pacman lif
 let isImmune = false;
 let immunityTime = 2000; // 2 seconds immunity after collision
 export let gameover = false
-let timeLeft = 5; // 10 minutes in seconds
+let timeLeft = 600; // 10 minutes in seconds
 
 
 
