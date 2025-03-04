@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 { mode: 'chase', duration: -1 }       // Chase indefinitely
             ];
             this.currentPatternIndex = 0;
+            this.previousMode = null;
 
             this.scatterTargets = {
                 'blinky': { x: 25, y: 0 },  // Top-right
@@ -28,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         update(deltaTime) {
             // Skip updating if in frightened mode (handled by ghost timers)
             if (this.mode === 'frightened') return;
+            
             // Update mode timer
             this.modeTimer += deltaTime;
 
@@ -60,7 +62,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 return this.scatterTargets[ghostId];
             } else if (this.mode === 'frightened') {
                 // No specific target in frightened mode (random movement)
-                return null;
+                return {
+                    x: Math.floor(Math.random() * mazeGrid[0].length),
+                    y: Math.floor(Math.random() * mazeGrid.length)
+                };
             } else {
                 // Use the ghost's chase targeting
                 return ghosts[ghostId].calculateTarget(pacmanX, pacmanY, pacmanDirection);
@@ -70,10 +75,12 @@ document.addEventListener("DOMContentLoaded", () => {
         setFrightenedMode() {
             this.previousMode = this.mode;
             this.mode = 'frightened';
+            console.log("Ghost manager set to frightened mode");
         }
         
         revertFromFrightenedMode() {
             this.mode = this.previousMode || 'chase';
+            console.log(`Ghost manager reverted to ${this.mode} mode`);
         }
     }
     // Initialize ghost manager
@@ -81,11 +88,80 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Ghost configuration
     const GHOST_CONFIG = {
-        blinky: { startX: 14, startY: 11, color: 'red', character: '👻' },
-        pinky: { startX: 12, startY: 14, color: 'pink', character: '👻' },
-        inky: { startX: 14, startY: 14, color: 'cyan', character: '👻' },
-        clyde: { startX: 16, startY: 14, color: 'orange', character: '👻' }
+        blinky: {
+            startX: 14,
+            startY: 11,
+            color: 'red',
+            character: `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="red">
+                                <animate attributeName="d" 
+                                    values="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19;
+                                            M1,20 L1,9 C1,4.5 5,1 10,1 C15,1 19,4.5 19,9 L19,20 L15,16 L13,20 L10,16 L7,20 L5,16 L1,20"
+                                    dur="0.5s"
+                                    repeatCount="indefinite"/>
+                            </path>
+                            <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
+                            <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
+                            <circle class="pupil" cx="7" cy="8" r="1" fill="black">
+                                <animate attributeName="cx" values="6;8;6" dur="2s" repeatCount="indefinite"/>
+                            </circle>
+                            <circle class="pupil" cx="13" cy="8" r="1" fill="black">
+                                <animate attributeName="cx" values="12;14;12" dur="2s" repeatCount="indefinite"/>
+                            </circle>
+                        </svg>`
+        },
+        pinky: {
+            startX: 12,
+            startY: 14,
+            color: 'pink',
+            character: `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                          <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="pink"/>
+                          <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
+                          <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
+                          <circle class="pupil" cx="7" cy="8" r="1" fill="black">
+                            <animate attributeName="cx" values="6;8;6" dur="2s" repeatCount="indefinite"/>
+                          </circle>
+                          <circle class="pupil" cx="13" cy="8" r="1" fill="black">
+                            <animate attributeName="cx" values="12;14;12" dur="2s" repeatCount="indefinite"/>
+                          </circle>
+                        </svg>`
+        },
+        inky: {
+            startX: 14,
+            startY: 14,
+            color: 'cyan',
+            character: `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                          <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="cyan"/>
+                          <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
+                          <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
+                          <circle class="pupil" cx="7" cy="8" r="1" fill="black">
+                            <animate attributeName="cx" values="6;8;6" dur="2s" repeatCount="indefinite"/>
+                          </circle>
+                          <circle class="pupil" cx="13" cy="8" r="1" fill="black">
+                            <animate attributeName="cx" values="12;14;12" dur="2s" repeatCount="indefinite"/>
+                          </circle>
+                        </svg>`
+        },
+        clyde: {
+            startX: 16,
+            startY: 14,
+            color: 'orange',
+            character: `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                          <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="orange"/>
+                          <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
+                          <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
+                          <circle class="pupil" cx="7" cy="8" r="1" fill="black">
+                            <animate attributeName="cx" values="6;8;6" dur="2s" repeatCount="indefinite"/>
+                          </circle>
+                          <circle class="pupil" cx="13" cy="8" r="1" fill="black">
+                            <animate attributeName="cx" values="12;14;12" dur="2s" repeatCount="indefinite"/>
+                          </circle>
+                        </svg>`
+        }
     };
+
+    // Ghost house position for returning after being eaten
+    const GHOST_HOUSE = { x: 14, y: 11 };
 
     const CELL_SIZE = 18;
     const GHOST_POSITION_OFFSET = {
@@ -93,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
         y: -7  // Vertical offset to center ghost in path
     };
     const GHOST_SPEED = 1.4;
+    const GHOST_EATEN_SPEED = 3.8; // Faster when returning to ghost house
     const GRID_SNAP_THRESHOLD = 1;
 
     const PACMAN_START_POS = {
@@ -112,11 +189,12 @@ document.addEventListener("DOMContentLoaded", () => {
             this.nextDirection = this.direction;
             this.isMoving = false;
             this.isVulnerable = false;
+            this.isEaten = false;
             this.speed = GHOST_SPEED;
             this.shouldReverseDirection = false; // For reversing direction on mode change
             this.vulnerableTimer = null;
             this.flashingInterval = null;
-            this.previousMode = null;
+            this.originalColor = config.color;
 
             this.initializeGhost(config);
             this.setupModeChangeListener();
@@ -138,8 +216,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setupModeChangeListener() {
             document.addEventListener('ghostModeChanged', () => {
-                // Reverse direction when mode changes, but not during frightened mode
-                if (!this.isVulnerable) {
+                // Reverse direction when mode changes, but not during frightened or eaten mode
+                if (!this.isVulnerable && !this.isEaten) {
                     this.shouldReverseDirection = true;
                 }
             });
@@ -162,6 +240,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 gridX < 0 || gridX >= mazeGrid[0].length) {
                 return false;
             }
+
+            // When eaten, ghosts can move through any path and the ghost house
+            if (this.isEaten) {
+                return mazeGrid[gridY][gridX] !== 0; // Can move through anything except walls
+            }
+
             // Allow movement on paths (1), ghost house entrance (2) and ghost house (3)
             return mazeGrid[gridY][gridX] === 1 ||
                 mazeGrid[gridY][gridX] === 2 ||
@@ -262,8 +346,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-
         chooseNextDirection() {
+            // If eaten, always target the ghost house
+            if (this.isEaten) {
+                return this.chooseDirectionToTarget(GHOST_HOUSE.x, GHOST_HOUSE.y);
+            }
+
+            // In frightened mode, choose random directions
+            if (this.isVulnerable) {
+                return this.chooseNextDirectionFrightened();
+            }
+
             // Get current target based on mode
             const pacman = document.getElementById('pacman');
             const pacmanX = parseInt(pacman.style.left);
@@ -274,6 +367,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.id, pacmanX, pacmanY, pacmanDirection
             );
 
+            return this.chooseDirectionToTarget(target.x, target.y);
+        }
+
+        chooseDirectionToTarget(targetX, targetY) {
             // Find possible directions at current intersection
             const possibleDirections = ['up', 'down', 'left', 'right'].filter(dir => {
                 const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, dir);
@@ -304,30 +401,24 @@ document.addEventListener("DOMContentLoaded", () => {
             if (validDirections.length === 0) return this.direction;
             if (validDirections.length === 1) return validDirections[0];
 
-            // In frightened mode, choose randomly
-            if (ghostManager.mode === 'frightened') {
-                return validDirections[Math.floor(Math.random() * validDirections.length)];
-            }
-
             // Calculate which direction gets us closest to the target
             return validDirections.reduce((bestDir, currentDir) => {
                 let nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, currentDir);
                 let currentDistance = Math.sqrt(
-                    Math.pow(nextPos.x - target.x, 2) +
-                    Math.pow(nextPos.y - target.y, 2)
+                    Math.pow(nextPos.x - targetX, 2) +
+                    Math.pow(nextPos.y - targetY, 2)
                 );
 
                 let bestPos = this.getNextPosition(this.currentGridX, this.currentGridY, bestDir);
                 let bestDistance = Math.sqrt(
-                    Math.pow(bestPos.x - target.x, 2) +
-                    Math.pow(bestPos.y - target.y, 2)
+                    Math.pow(bestPos.x - targetX, 2) +
+                    Math.pow(bestPos.y - targetY, 2)
                 );
 
                 return currentDistance < bestDistance ? currentDir : bestDir;
             }, validDirections[0]);
         }
 
-        // In the frightened mode, choose random directions
         chooseNextDirectionFrightened() {
             const possibleDirections = ['up', 'down', 'left', 'right'].filter(dir => {
                 const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, dir);
@@ -350,30 +441,112 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         makeVulnerable() {
+            // Do nothing if already eaten
+            if (this.isEaten) return;
+        
             this.isVulnerable = true;
-            this.element.style.color = 'blue';
             this.speed = GHOST_SPEED * 0.5; // Slower when vulnerable
-            this.previousMode = ghostManager.mode;
-            ghostManager.mode = setFrightenedMode();
-
+        
+            // Select the SVG and the relevant elements (body, eyes, pupils)
+            const ghostBody = this.element.querySelector('.ghost-body');
+            // const eyes = this.element.querySelectorAll('.eye');
+            // const pupils = this.element.querySelectorAll('.pupil');
+            
+            if (ghostBody) {
+                ghostBody.setAttribute('fill', 'blue'); // Change the body color to blue
+            }
+            
+            // Change the color of the eyes and pupils (if necessary)
+            // eyes.forEach(eye => eye.setAttribute('fill', 'white')); // Ensuring eyes stay white
+            // pupils.forEach(pupil => pupil.setAttribute('fill', 'black')); // Ensuring pupils stay black
+        
+            // Set ghost manager to frightened mode
+            ghostManager.setFrightenedMode();
+        
             // When frightened, reverse direction immediately
             this.shouldReverseDirection = true;
-
+        
             // Clear existing timer if there is one
             if (this.vulnerableTimer) clearTimeout(this.vulnerableTimer);
-
+            if (this.flashingInterval) this.stopFlashing();
+        
             // Set up flashing animation near the end of frightened mode
             this.vulnerableTimer = setTimeout(() => {
                 this.startFlashing();
             }, 7000); // Start flashing 3 seconds before vulnerability ends
-
+        
+            // Set a timer to end the vulnerable state after 10 seconds
             setTimeout(() => {
-                this.isVulnerable = false;
-                this.element.style.color = GHOST_CONFIG[this.id].color;
-                this.speed = GHOST_SPEED;
-                ghostManager.mode = this.previousMode;
-                this.stopFlashing();
+                if (!this.isEaten) {  // Only revert if not eaten
+                    this.endVulnerableState();
+                }
             }, 10000); // 10 seconds of vulnerability
+        }
+        
+
+        endVulnerableState() {
+            this.isVulnerable = false;
+            this.element.style.color = this.originalColor;
+            this.speed = GHOST_SPEED;
+            this.stopFlashing();
+            
+            // Revert ghost manager from frightened mode
+            // Only do this if all ghosts are no longer vulnerable
+            if (!Object.values(ghosts).some(ghost => ghost.isVulnerable)) {
+                ghostManager.revertFromFrightenedMode();
+            }
+        }
+
+        makeEaten() {
+            // If already eaten, do nothing
+            if (this.isEaten) return;
+            
+            // Change state
+            this.isEaten = true;
+            this.isVulnerable = false;
+            this.stopFlashing();
+            
+            // Change appearance to eyes only
+            this.element.innerHTML = '👀';  // Or use any other representation for eyes
+            this.element.style.color = 'white';
+            
+            // Speed up for returning to ghost house
+            this.speed = GHOST_EATEN_SPEED;
+            
+            // Update score or other game mechanics here
+            // ...
+            
+            console.log(`${this.id} has been eaten!`);
+        }
+
+        // Check if ghost has returned to ghost house
+        checkReturnToGhostHouse() {
+            if (!this.isEaten) return false;
+            
+            // Check if close enough to ghost house center
+            const ghostHouseX = GHOST_HOUSE.x * CELL_SIZE + GHOST_POSITION_OFFSET.x;
+            const ghostHouseY = GHOST_HOUSE.y * CELL_SIZE + GHOST_POSITION_OFFSET.y;
+            
+            const distance = Math.sqrt(
+                Math.pow(this.x - ghostHouseX, 2) +
+                Math.pow(this.y - ghostHouseY, 2)
+            );
+            
+            // If ghost has reached the ghost house
+            if (distance < CELL_SIZE / 2) {
+                this.reviveGhost();
+                return true;
+            }
+            
+            return false;
+        }
+        
+        reviveGhost() {
+            this.isEaten = false;
+            this.element.innerHTML = GHOST_CONFIG[this.id].character;
+            this.element.style.color = this.originalColor;
+            this.speed = GHOST_SPEED;
+            console.log(`${this.id} has been revived!`);
         }
 
         startFlashing() {
@@ -391,6 +564,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         checkCollision(pacmanX, pacmanY) {
+            // Don't check collision if already eaten
+            if (this.isEaten) return false;
+            
             const collisionThreshold = CELL_SIZE / 2;
             const dx = Math.abs(this.x - pacmanX);
             const dy = Math.abs(this.y - pacmanY);
@@ -398,6 +574,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         update() {
+            // Check if ghost has returned to ghost house
+            if (this.isEaten) {
+                this.checkReturnToGhostHouse();
+            }
+            
             if (this.isAtGridCenter()) {
                 this.currentGridX = Math.round((this.x - GHOST_POSITION_OFFSET.x) / CELL_SIZE);
                 this.currentGridY = Math.round((this.y - GHOST_POSITION_OFFSET.y) / CELL_SIZE);
@@ -441,9 +622,13 @@ document.addEventListener("DOMContentLoaded", () => {
             this.nextDirection = this.direction;
             this.isMoving = false;
             this.isVulnerable = false;
+            this.isEaten = false;
+            this.speed = GHOST_SPEED;
+            this.element.innerHTML = GHOST_CONFIG[this.id].character;
+            this.element.style.color = this.originalColor;
+            this.stopFlashing();
             this.update(); // Immediately update position
         }
-
     }
 
     // Initialize ghosts
@@ -455,52 +640,60 @@ document.addEventListener("DOMContentLoaded", () => {
     // Add event listener for mode changes
     document.addEventListener('ghostModeChanged', () => {
         Object.values(ghosts).forEach(ghost => {
-            ghost.shouldReverseDirection = true;
+            if (!ghost.isVulnerable && !ghost.isEaten) {
+                ghost.shouldReverseDirection = true;
+            }
         });
     }); 
 
     // Add game state
-    let lives = 2; //there are three lives. the last life is 0(for pacman life elemnet indexing)
+    let lives = 2; //there are three lives. the last life is 0(for pacman life element indexing)
     let isImmune = false;
     let immunityTime = 2000; // 2 seconds immunity after collision
-    let gameover = false
+    let gameover = false;
+    let score = 0;
 
-    function handleCollision() {
-        if (isImmune) return;
+    function handleCollision(ghost) {
+        // If ghost is vulnerable, eat it
+        if (ghost.isVulnerable) {
+            eatGhost(ghost);
+            return;
+        }
+        
+        // If pacman is immune or the ghost is already eaten, do nothing
+        if (isImmune || ghost.isEaten) return;
 
         lives--;
         console.log(`Collision! Lives remaining: ${lives}`);
 
-
         // Reset all ghosts
         Object.values(ghosts).forEach(ghost => ghost.reset());
-
 
         // Apply fade-in effect to maze
         const overlay = document.getElementById('fade-overlay');
         if (overlay && lives > -1) {
             overlay.style.opacity = '1';
-            overlay.style.backgroundColor = 'black'
+            overlay.style.backgroundColor = 'black';
             setTimeout(() => {
                 overlay.style.opacity = '0';
             }, 800); // Duration of fade-in and fade-out animation
-
         }
 
         // Reset Pac-Man position
+        const pacman = document.getElementById('pacman');
+        pacman.style.display = 'none';
         setTimeout(() => {
-            resetPacmanPosition()
-            pacman.style.display = 'block'
+            resetPacmanPosition();
+            pacman.style.display = 'block';
         }, 900);
 
-
         if (lives === -1) { // Lives are over
-            const gameOverAlert = document.querySelector('.game-over')
-            gameOverAlert.style.display = 'block'
+            const gameOverAlert = document.querySelector('.game-over');
+            gameOverAlert.style.display = 'block';
             overlay.style.opacity = '1';
-            overlay.style.backgroundColor = ''
+            overlay.style.backgroundColor = '';
             console.log('Game Over!');
-            gameover = true
+            gameover = true;
             return;
         }
 
@@ -515,6 +708,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function eatGhost(ghost) {
+        ghost.makeEaten();
+        
+        // Increase score
+        score += 200; // Base points for eating a ghost
+        
+        // Update score display if it exists
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        if (scoreDisplay) {
+            scoreDisplay.innerText = `Score: ${score}`;
+        }
+        
+        // Play eat ghost sound if exists
+        const eatGhostSound = document.getElementById('eatGhostSound');
+        if (eatGhostSound) {
+            eatGhostSound.play();
+        }
+        
+        console.log(`Ate ${ghost.id}! Score: ${score}`);
+    }
+
     function updateGhosts() {
         const pacman = document.getElementById('pacman');
         if (!pacman) return;
@@ -527,7 +741,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Check for collision
             if (ghost.checkCollision(pacmanX, pacmanY)) {
-                handleCollision();
+                handleCollision(ghost);
             }
         });
     }
@@ -537,7 +751,7 @@ document.addEventListener("DOMContentLoaded", () => {
         Object.values(ghosts).forEach(ghost => ghost.makeVulnerable());
     });
 
-    let lastGhostLoopTime = 0; // track time for deltaTimme in ghostLoop
+    let lastGhostLoopTime = 0; // track time for deltaTime in ghostLoop
 
     // Game loop for ghost movement
     function ghostLoop(timestamp) {
