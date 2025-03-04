@@ -1,13 +1,15 @@
 import { mazeGrid, resetPacmanPosition, changePacmanImage } from './maze.js';
+import { score } from './score.js';
 // import { isGamePaused, initPauseSystem } from './pauseMenu.js';
 
 const ghosts = {};
 
 // Add game state
-let lives = 2; //there are three lives. the last life is 0(for pacman life elemnet indexing)
+export let lives = 2; //there are three lives. the last life is 0(for pacman life elemnet indexing)
 let isImmune = false;
 let immunityTime = 2000; // 2 seconds immunity after collision
 export let gameover = false
+let timeLeft = 5; // 10 minutes in seconds
 
 
 
@@ -232,6 +234,34 @@ export function ghostLoop() {
     
 }
 
+ const timeElement = document.getElementById('time')
+    let timerStart=false
+   
+
+     function createTimer() {
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            // Handle game over
+            // WORK IN PROGRESS
+            return;
+        }
+         if (score > 0){
+            timerStart=true
+        }
+        if (timerStart){
+            timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        
+        // Format time as MM:SS
+        const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        timeElement.textContent = formattedTime;
+        }
+        
+    }
+    setInterval(createTimer, 1000)
+
+
 function updateGhosts() {
     const pacman = document.getElementById('pacman');
     if (!pacman) return;
@@ -278,7 +308,7 @@ function handleCollision() {
     }, 900);
 
 
-    if (lives === -1) { // Lives are over
+    if (lives === -1 || timeLeft=== 0) { // Lives are over
         const gameOverAlert = document.querySelector('.game-over')
         gameOverAlert.style.display = 'block'
         overlay.style.opacity = '1';
