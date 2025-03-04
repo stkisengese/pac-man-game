@@ -12,22 +12,18 @@
 <body>
     <div id="main-menu" class="main-menu">
         <div class="menu-content">
-            <!-- <h1 class="game-title">PACMAN</h1> -->
             <img class="pacman-logo" src="pacman_logo.png" alt="PACMAN">
-            <button id="start-button" class="menu-button">START</button>
-            <!-- <div class="instructions">
-                <br>
-                <p>Use arrow keys to move</p>
-                <p>Press ESC to pause</p>
-            </div> -->
+            <button id="start-button" class="menu-button">PLAY</button>
         </div>
     </div>
-
     <div id="game-container">
-
         <div id="game-ui" class="game-ui">
             <div id="fade-overlay">
                 <h1 class="game-over">Game Over</h1>
+            </div>
+            <div>
+                <button id="pauseBtn" class="pause-button">⏸️</button>
+
             </div>
             <div id="row-top" class="row-top">
                 <div class='column_1'>
@@ -42,6 +38,7 @@
                     <div class="time">TIME :</div>
                     <div id='time'>0</div>
                 </div>
+                <!-- New pause button added here -->
             </div>
             <div id="maze" class="maze">
                 <img id="maze-img" class="maze-img" src="assets/maze/maze_blue.svg" alt="maze">
@@ -52,7 +49,6 @@
                 <p id='inky' class='ghost'><img src="assets/sprites/ghost_inky.svg" alt=""></p>
                 <p id='pinky' class='ghost'><img src="assets/sprites/ghost_pinky.svg" alt=""></p>
                 <p id='blinky' class='ghost'><img src="assets/sprites/ghost_blinky.svg" alt=""></p>
-                </p>
             </div>
             <div class="column_3">
                 <p id='pacman-life' class='pacman-life'><img src="favicon.ico" alt=""></p>
