@@ -8,7 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const pacman = document.getElementById('pacman')
     const scoreElement = document.getElementById('score')
     const highScoreElement = document.getElementById('high-score-display')
+    const timeElement = document.getElementById('time')
+    
 
+    setInterval(createTimer, 1000)
+function createTimer(){
+    timeElement.textContent = new(Date)
+}
     function updateScore(points) {
         score += points;
         scoreElement.textContent = `${score}`;
@@ -18,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('highscore', highscore)
             highScoreElement.textContent = `${highscore}`;
         }
+        
     }
 
     function checkCollision() {
