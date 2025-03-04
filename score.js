@@ -1,6 +1,6 @@
 import { collectDot } from './maze.js';
 
-let score=0
+export let score=0
 let highscore = localStorage.getItem('highscore') || 0;
 
 
@@ -8,13 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const pacman = document.getElementById('pacman')
     const scoreElement = document.getElementById('score')
     const highScoreElement = document.getElementById('high-score-display')
-    const timeElement = document.getElementById('time')
-    
-
-    setInterval(createTimer, 1000)
-function createTimer(){
-    timeElement.textContent = new(Date)
-}
     function updateScore(points) {
         score += points;
         scoreElement.textContent = `${score}`;
