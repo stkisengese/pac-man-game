@@ -1,5 +1,6 @@
 import {gameover} from "./ghosts.js"
 
+
 window.onload = function () {
     renderRandomDots();
 };
@@ -397,9 +398,9 @@ export function gameLoop() {
     pacmanAnimationId = requestAnimationFrame(gameLoop);
 }
 
-document.addEventListener('gameRestart', () => {
-    // Reset game state
-    resetPacmanPosition();
-    // Reset any other game state as needed
-});
+// document.addEventListener('gameRestart', () => {
+//     // Reset game state
+//     resetPacmanPosition();
+//     // Reset any other game state as needed
+// });
 // import { isGamePaused, initPauseSystem } from './pauseMenu.js';
