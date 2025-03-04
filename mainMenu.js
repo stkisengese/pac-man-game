@@ -86,11 +86,7 @@ function initMainMenu() {
         }
         
         // Hide game over screen if visible
-        const fadeOverlay = document.getElementById('fade-overlay');
-        if (fadeOverlay) {
-            fadeOverlay.style.display = 'none';
-        }
-        
+       
         // Dispatch a reset event for other components to listen for
         const resetEvent = new CustomEvent('gameReset');
         document.dispatchEvent(resetEvent);
