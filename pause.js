@@ -183,13 +183,21 @@ export function modifyGameLoop(originalGameLoop) {
 
 // Initialize pause menu system when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+    const PauseDiv = document.createElement('div')
+    PauseDiv.id = 'game-ui';
+    PauseDiv.style.position = 'absolute';
+    PauseDiv.style.top = '0';
+    PauseDiv.style.left = '0';
+    PauseDiv.style.width = '100%';
+    PauseDiv.style.zIndex = '10';
+    document.body.appendChild(PauseDiv)
+    
     setupPauseMenu();
-
     // Also add a visible pause button for mobile compatibility
-    const pauseButtonHTML = `<button id="pauseBtn" style="position: absolute; top: 10px; right: 10px; z-index: 999; 
-                             background-color: yellow; color: black; border: none; padding: 10px 20px; 
-                             cursor: pointer; font-family: 'Press Start 2P', sans-serif, cursive;">⏸</button>`;
-    document.body.insertAdjacentHTML('beforeend', pauseButtonHTML);
+    // const pauseButtonHTML = `<button id="pauseBtn" style="position: absolute; top: 10px; right: 10px; z-index: 999; 
+    //                          background-color: yellow; color: black; border: none; padding: 10px 20px; 
+    //                          cursor: pointer; font-family: 'Press Start 2P', sans-serif, cursive;">⏸</button>`;
+    // document.body.insertAdjacentHTML('beforeend', pauseButtonHTML);
 
     document.getElementById('pauseBtn').addEventListener('click', togglePause);
 });
