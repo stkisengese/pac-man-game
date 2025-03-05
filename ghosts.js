@@ -403,13 +403,63 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             const filteredDirections = possibleDirections.filter(dir =>
-                dir !== oppositeDir[this.direction]
+                dir !== oppositeDir[this.state.direction]
             );
 
-            if (filteredDirections.length > 0) {
-                return filteredDirections[Math.floor(Math.random() * filteredDirections.length)];
+            return filteredDirections.length > 0 
+                ? filteredDirections[Math.floor(Math.random() * filteredDirections.length)]
+                : possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
+        }
+
+        update() {
+            // Update grid position when at grid center
+            if (this.isAtGridCenter()) {
+                this.state.gridPosition = {
+                    x: Math.round((this.state.position.x - GAME_CONFIG.GHOST_OFFSET.x) / GAME_CONFIG.CELL_SIZE),
+                    y: Math.round((this.state.position.y - GAME_CONFIG.GHOST_OFFSET.y) / GAME_CONFIG.CELL_SIZE)
+                };
+
+                // Choose new direction at intersections
+                this.state.nextDirection = this.chooseNextDirection();
+                this.state.direction = this.state.nextDirection;
             }
-            return possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
+
+            // Check next position validity
+            const nextPos = this.getNextPosition(this.state.gridPosition.x, this.state.gridPosition.y, this.state.direction);
+            
+            if (this.isValidMove(nextPos.x, nextPos.y)) {
+                // Move ghost based on direction
+                switch (this.state.direction) {
+                    case "right": this.state.position.x += this.state.speed; break;
+                    case "left": this.state.position.x -= this.state.speed; break;
+                    case "up": this.state.position.y -= this.state.speed; break;
+                    case "down": this.state.position.y += this.state.speed; break;
+                }
+
+                // Handle tunnel teleportation
+                if (nextPos.x === 27 && this.state.gridPosition.x === 0) {
+                    this.state.position.x = nextPos.x * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.x;
+                }
+                if (nextPos.x === 0 && this.state.gridPosition.x === 27) {
+                    this.state.position.x = 0 + GAME_CONFIG.GHOST_OFFSET.x;
+                }
+            } else {
+                // Snap to grid if move is invalid
+                this.state.position.x = this.state.gridPosition.x * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.x;
+                this.state.position.y = this.state.gridPosition.y * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.y;
+                
+                // Rechoose direction
+                this.state.nextDirection = this.chooseNextDirection();
+            }
+
+            // Update element position
+            this.element.style.left = `${this.state.position.x}px`;
+            this.element.style.top = `${this.state.position.y}px`;
+
+            // Check for return to ghost house if eaten
+            if (this.state.isEaten) {
+                this.checkReturnToGhostHouse();
+            }
         }
 
         makeVulnerable() {
