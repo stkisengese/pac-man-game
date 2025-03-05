@@ -393,7 +393,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         chooseNextDirectionFrightened() {
             const possibleDirections = ['up', 'down', 'left', 'right'].filter(dir => {
-                const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, dir);
+                const nextPos = this.getNextPosition(this.state.gridPosition.x, this.state.gridPosition.y, dir);
                 return this.isValidMove(nextPos.x, nextPos.y);
             });
 
