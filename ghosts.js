@@ -462,82 +462,72 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        makeVulnerable() {
-            // Do nothing if already eaten
-            if (this.isEaten) return;
+        checkReturnToGhostHouse() {
+            const ghostHousePosition = { x: 14, y: 11 };
+            const ghostHouseX = ghostHousePosition.x * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.x;
+            const ghostHouseY = ghostHousePosition.y * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.y;
         
-            this.isVulnerable = true;
-            this.speed = GHOST_SPEED * 0.5; // Slower when vulnerable
+            const distance = Math.sqrt(
+                Math.pow(this.state.position.x - ghostHouseX, 2) +
+                Math.pow(this.state.position.y - ghostHouseY, 2)
+            );
         
-            // Select the SVG and the relevant elements (body, eyes, pupils)
-            const ghostBody = this.element.querySelector('.ghost-body');
-            // const eyes = this.element.querySelectorAll('.eye');
-            // const pupils = this.element.querySelectorAll('.pupil');
-            
-            if (ghostBody) {
-                ghostBody.setAttribute('fill', 'blue'); // Change the body color to blue
+            // If the ghost reaches the ghost house
+            if (distance < GAME_CONFIG.CELL_SIZE / 2) {
+                // Pause or delay for animation before reviving
+                setTimeout(() => {
+                    this.revive(); // Revive the ghost after the delay
+                }, 500); // 500ms delay for example
             }
-            
-            // Change the color of the eyes and pupils (if necessary)
-            // eyes.forEach(eye => eye.setAttribute('fill', 'white')); // Ensuring eyes stay white
-            // pupils.forEach(pupil => pupil.setAttribute('fill', 'black')); // Ensuring pupils stay black
-        
-            // Set ghost manager to frightened mode
-            ghostManager.setFrightenedMode();
-        
-            // When frightened, reverse direction immediately
-            this.shouldReverseDirection = true;
-        
-            // Clear existing timer if there is one
-            if (this.vulnerableTimer) clearTimeout(this.vulnerableTimer);
-            if (this.flashingInterval) this.stopFlashing();
-        
-            // Set up flashing animation near the end of frightened mode
-            this.vulnerableTimer = setTimeout(() => {
-                this.startFlashing();
-            }, 7000); // Start flashing 3 seconds before vulnerability ends
-        
-            // Set a timer to end the vulnerable state after 10 seconds
-            setTimeout(() => {
-                if (!this.isEaten) {  // Only revert if not eaten
-                    this.endVulnerableState();
-                }
-            }, 10000); // 10 seconds of vulnerability
         }
         
 
-        endVulnerableState() {
-            this.isVulnerable = false;
-            this.element.style.color = this.originalColor;
-            this.speed = GHOST_SPEED;
-            this.stopFlashing();
+        makeVulnerable() {
+            if (this.state.isEaten) return;
+
+            this.state.isVulnerable = true;
+            this.state.speed = GAME_CONFIG.GHOST_SPEED.VULNERABLE;
             
-            // Revert ghost manager from frightened mode
-            // Only do this if all ghosts are no longer vulnerable
-            if (!Object.values(ghosts).some(ghost => ghost.isVulnerable)) {
-                ghostManager.revertFromFrightenedMode();
+            const ghostBody = this.element.querySelector('.ghost-body');
+            if (ghostBody) {
+                ghostBody.setAttribute('fill', 'blue');
+            }
+
+            this.stateManager.setFrightenedMode();
+            // this.reverseDirection();
+            this.shouldReverseDirection = true;
+
+            // Set timeout for vulnerability
+            setTimeout(() => this.endVulnerableState(), GAME_CONFIG.VULNERABLE_DURATION);
+        }
+
+        endVulnerableState() {
+            if (this.state.isEaten) return;
+
+            this.state.isVulnerable = false;
+            this.state.speed = GAME_CONFIG.GHOST_SPEED.NORMAL;
+            
+            const ghostBody = this.element.querySelector('.ghost-body');
+            if (ghostBody) {
+                ghostBody.setAttribute('fill', this.originalColor);
+            }
+
+            // Only revert global mode if no ghosts are vulnerable
+            if (!Object.values(ghosts).some(ghost => ghost.state.isVulnerable)) {
+                this.stateManager.revertFromFrightenedMode();
             }
         }
 
         makeEaten() {
-            // If already eaten, do nothing
-            if (this.isEaten) return;
+            if (this.state.isEaten) return;
+
+            this.state.isEaten = true;
+            this.state.isVulnerable = false;
+            this.state.speed = GAME_CONFIG.GHOST_SPEED.EATEN;
             
-            // Change state
-            this.isEaten = true;
-            this.isVulnerable = false;
-            this.stopFlashing();
-            
-            // Change appearance to eyes only
-            this.element.innerHTML = '👀';  // Or use any other representation for eyes
+            this.element.innerHTML = '👀';
             this.element.style.color = 'white';
-            
-            // Speed up for returning to ghost house
-            this.speed = GHOST_EATEN_SPEED;
-            
-            // Update score or other game mechanics here
-            // ...
-            
+
             console.log(`${this.id} has been eaten!`);
         }
 
