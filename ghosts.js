@@ -1,23 +1,37 @@
 import { mazeGrid, resetPacmanPosition, changePacmanImage } from './maze.js';
 
 document.addEventListener("DOMContentLoaded", () => {
-    class GhostManager {
+    // Constants for better configuration
+    const GAME_CONFIG = {
+        CELL_SIZE: 18,
+        GHOST_SPEED: {
+            NORMAL: 1.4,
+            VULNERABLE: 0.7,
+            EATEN: 3.8
+        },
+        VULNERABLE_DURATION: 10000,
+        IMMUNITY_TIME: 2000,
+        GHOST_OFFSET: { x: 4, y: -7 },
+        GRID_SNAP_THRESHOLD: 1
+    };
+
+    // Centralized Ghost State Management
+    class GhostStateManager {
         constructor() {
             this.mode = 'scatter';
             this.modeTimer = 0;
             this.modePatterns = [
-                { mode: 'scatter', duration: 10000 },  // 10 seconds scatter
-                { mode: 'chase', duration: 20000 },   // 20 seconds chase
-                { mode: 'scatter', duration: 7000 },  // 7 seconds scatter
-                { mode: 'chase', duration: 20000 },   // 20 seconds chase
-                { mode: 'scatter', duration: 5000 },  // 5 seconds scatter
-                { mode: 'chase', duration: 20000 },   // 20 seconds chase
-                { mode: 'scatter', duration: 5000 },  // 5 seconds scatter
-                { mode: 'chase', duration: -1 }       // Chase indefinitely
+                { mode: 'scatter', duration: 10000 },
+                { mode: 'chase', duration: 20000 },
+                { mode: 'scatter', duration: 7000 },
+                { mode: 'chase', duration: 20000 },
+                { mode: 'scatter', duration: 5000 },
+                { mode: 'chase', duration: 20000 },
+                { mode: 'scatter', duration: 5000 },
+                { mode: 'chase', duration: -1 }
             ];
             this.currentPatternIndex = 0;
             this.previousMode = null;
-
             this.scatterTargets = {
                 'blinky': { x: 25, y: 0 },  // Top-right
                 'pinky': { x: 2, y: 0 },    // Top-left
