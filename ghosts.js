@@ -311,27 +311,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 case 'clyde': // Orange ghost - targets Pacman when far, scatters when close
                     const distance = Math.sqrt(
-                        Math.pow(this.currentGridX - pacmanGridX, 2) +
-                        Math.pow(this.currentGridY - pacmanGridY, 2)
+                        Math.pow(pacmanGridX - this.state.gridPosition.x, 2) +
+                        Math.pow(pacmanGridY - this.state.gridPosition.y, 2)
                     );
-
-                    // If closer than 8 tiles, target scatter point (bottom-left corner)
-                    if (distance < 8) {
-                        return { x: 0, y: 30 }; // Adjust corner position as needed
-                    } else {
-                        return { x: pacmanGridX, y: pacmanGridY };
-                    }
+                    return distance < 8 ? { x: 0, y: 30 } : { x: pacmanGridX, y: pacmanGridY };
             }
         }
 
         chooseNextDirection() {
-            // If eaten, always target the ghost house
-            if (this.isEaten) {
-                return this.chooseDirectionToTarget(GHOST_HOUSE.x, GHOST_HOUSE.y);
+            // Eaten ghosts always target ghost house
+            if (this.state.isEaten) {
+                return this.chooseDirectionToTarget(14, 11);
             }
 
-            // In frightened mode, choose random directions
-            if (this.isVulnerable) {
+            // Frightened mode - random direction
+            if (this.state.isVulnerable) {
                 return this.chooseNextDirectionFrightened();
             }
 
@@ -339,9 +333,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const pacman = document.getElementById('pacman');
             const pacmanX = parseInt(pacman.style.left);
             const pacmanY = parseInt(pacman.style.top);
-            const pacmanDirection = window.pacmanDirection || 'right'; // Assume pacman direction is stored globally
+            const pacmanDirection = window.pacmanDirection || 'right';
 
-            const target = ghostManager.getCurrentTarget(
+            const target = this.stateManager.getCurrentTarget(
                 this.id, pacmanX, pacmanY, pacmanDirection
             );
 
