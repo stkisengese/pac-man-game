@@ -695,32 +695,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Check for collision
             if (ghost.checkCollision(pacmanX, pacmanY)) {
-                handleCollision(ghost);
+                gameStateManager.handleCollision(ghost);
             }
         });
     }
 
-    // Handle power pellet collection
-    document.addEventListener('powerPelletCollected', () => {
-        Object.values(ghosts).forEach(ghost => ghost.makeVulnerable());
-    });
-
     let lastGhostLoopTime = 0; // track time for deltaTime in ghostLoop
 
-    // Game loop for ghost movement
+    // Game Loop for ghost movement
     function ghostLoop(timestamp) {
+        if (gameStateManager.gameOver) return;
+
         const deltaTime = timestamp - lastGhostLoopTime;
         lastGhostLoopTime = timestamp;
 
-        // Update ghost manager
-        ghostManager.update(deltaTime);
+        // Update ghost state manager
+        ghostStateManager.update(deltaTime);
 
-        // Update ghosts
+        // Update individual ghosts and check collisions
         updateGhosts(deltaTime);
 
-        if (!gameover) {
-            requestAnimationFrame(ghostLoop);
-        }
+        requestAnimationFrame(ghostLoop);
     }
     ghostLoop(performance.now());
 });
