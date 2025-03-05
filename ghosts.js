@@ -256,12 +256,11 @@ document.addEventListener("DOMContentLoaded", () => {
             return this.handleTunnel(nextX, nextY);
         }
 
-        calculateTarget(pacmanX, pacmanY, pacmanDirection) {
-            // Convert from pixel coordinates to grid coordinates
-            const pacmanGridX = Math.floor(pacmanX / CELL_SIZE);
-            const pacmanGridY = Math.floor(pacmanY / CELL_SIZE);
+        calculateChaseTarget(ghostId, pacmanX, pacmanY, pacmanDirection) {
+            const pacmanGridX = Math.floor(pacmanX / GAME_CONFIG.CELL_SIZE);
+            const pacmanGridY = Math.floor(pacmanY / GAME_CONFIG.CELL_SIZE);
 
-            switch (this.id) {
+            switch (ghostId) {
                 case 'blinky': // Red ghost - directly targets Pacman
                     return { x: pacmanGridX, y: pacmanGridY };
 
@@ -273,7 +272,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     switch (pacmanDirection) {
                         case 'up':
                             targetY -= 4;
-                            // Recreate the original game's bug: when Pacman faces up, Pinky targets 4 tiles up and 4 tiles left
                             targetX -= 4;
                             break;
                         case 'down': targetY += 4; break;
@@ -284,9 +282,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     return { x: targetX, y: targetY };
 
                 case 'inky': // Cyan ghost - uses vector from Blinky to determine target
-                    let blinky = ghosts['blinky'];
-                    let blinkyGridX = Math.floor(blinky.x / CELL_SIZE);
-                    let blinkyGridY = Math.floor(blinky.y / CELL_SIZE);
+                    const blinky = ghosts['blinky'];
+                    const blinkyGridX = Math.floor(blinky.state.position.x / GAME_CONFIG.CELL_SIZE);
+                    const blinkyGridY = Math.floor(blinky.state.position.y / GAME_CONFIG.CELL_SIZE);
 
                     // First, get position 2 tiles ahead of Pacman
                     let pivotX = pacmanGridX;
@@ -295,7 +293,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     switch (pacmanDirection) {
                         case 'up':
                             pivotY -= 2;
-                            // Same bug as Pinky
                             pivotX -= 2;
                             break;
                         case 'down': pivotY += 2; break;
@@ -304,8 +301,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
 
                     // Then, calculate the vector from Blinky to this position and double it
-                    let vectorX = pivotX - blinkyGridX;
-                    let vectorY = pivotY - blinkyGridY;
+                    const vectorX = pivotX - blinkyGridX;
+                    const vectorY = pivotY - blinkyGridY;
 
                     return {
                         x: pivotX + vectorX,
