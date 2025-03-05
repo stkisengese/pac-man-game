@@ -531,69 +531,45 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log(`${this.id} has been eaten!`);
         }
 
-        // Check if ghost has returned to ghost house
-        checkReturnToGhostHouse() {
-            if (!this.isEaten) return false;
-            
-            // Check if close enough to ghost house center
-            const ghostHouseX = GHOST_HOUSE.x * CELL_SIZE + GHOST_POSITION_OFFSET.x;
-            const ghostHouseY = GHOST_HOUSE.y * CELL_SIZE + GHOST_POSITION_OFFSET.y;
-            
-            const distance = Math.sqrt(
-                Math.pow(this.x - ghostHouseX, 2) +
-                Math.pow(this.y - ghostHouseY, 2)
-            );
-            
-            // If ghost has reached the ghost house
-            if (distance < CELL_SIZE / 2) {
-                this.reviveGhost();
-                return true;
-            }
-            
-            return false;
-        }
-        
-        reviveGhost() {
-            this.isEaten = false;
-            this.element.innerHTML = GHOST_CONFIG[this.id].character;
+        revive() {
+            this.state.isEaten = false;
+            this.element.innerHTML = this.config.character(this.originalColor);
             this.element.style.color = this.originalColor;
-            this.speed = GHOST_SPEED;
+            this.state.speed = GAME_CONFIG.GHOST_SPEED.NORMAL;
+
             console.log(`${this.id} has been revived!`);
-        }
-
-        startFlashing() {
-            this.flashingInterval = setInterval(() => {
-                this.element.style.color = this.element.style.color === 'blue' ?
-                    'white' : 'blue';
-            }, 250); // Flash every 250ms
-        }
-
-        stopFlashing() {
-            if (this.flashingInterval) {
-                clearInterval(this.flashingInterval);
-                this.flashingInterval = null;
-            }
         }
 
         checkCollision(pacmanX, pacmanY) {
             // Don't check collision if already eaten
-            if (this.isEaten) return false;
+            if (this.state.isEaten) return false;
             
-            const collisionThreshold = CELL_SIZE / 2;
-            const dx = Math.abs(this.x - pacmanX);
-            const dy = Math.abs(this.y - pacmanY);
+            const collisionThreshold = GAME_CONFIG.CELL_SIZE / 2;
+            const dx = Math.abs(this.state.position.x - pacmanX);
+            const dy = Math.abs(this.state.position.y - pacmanY);
+            
             return dx < collisionThreshold && dy < collisionThreshold;
         }
 
-        update() {
-            // Check if ghost has returned to ghost house
-            if (this.isEaten) {
-                this.checkReturnToGhostHouse();
-            }
+        reset() {
+            const config = this.config;
+            this.state.position = {
+                x: config.startPos.x * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.x,
+                y: config.startPos.y * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.y
+            };
+            this.state.gridPosition = { x: config.startPos.x, y: config.startPos.y };
+            this.state.direction = this.getRandomDirection();
+            this.state.nextDirection = this.state.direction;
+            this.state.isVulnerable = false;
+            this.state.isEaten = false;
+            this.state.speed = GAME_CONFIG.GHOST_SPEED.NORMAL;
             
-            if (this.isAtGridCenter()) {
-                this.currentGridX = Math.round((this.x - GHOST_POSITION_OFFSET.x) / CELL_SIZE);
-                this.currentGridY = Math.round((this.y - GHOST_POSITION_OFFSET.y) / CELL_SIZE);
+            this.element.innerHTML = this.config.character(this.originalColor);
+            this.element.style.color = this.originalColor;
+            
+            this.update(); // Immediately update position
+        }
+    }
 
                 // Choose new direction at intersections
                 this.nextDirection = this.chooseNextDirection();
