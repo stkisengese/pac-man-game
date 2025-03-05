@@ -571,150 +571,116 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-                // Choose new direction at intersections
-                this.nextDirection = this.chooseNextDirection();
-                this.direction = this.nextDirection;
+    // Game State Manager
+    class GameStateManager {
+        constructor() {
+            this.lives = 2;
+            this.score = 0;
+            this.isImmune = false;
+            this.gameOver = false;
+        }
+
+        handleCollision(ghost) {
+            if (this.isImmune || ghost.state.isEaten) return;
+
+            if (ghost.state.isVulnerable) {
+                this.eatGhost(ghost);
+                return;
             }
 
-            const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, this.direction);
-            if (this.isValidMove(nextPos.x, nextPos.y)) {
-                this.isMoving = true;
-                switch (this.direction) {
-                    case "right": this.x += this.speed; break;
-                    case "left": this.x -= this.speed; break;
-                    case "up": this.y -= this.speed; break;
-                    case "down": this.y += this.speed; break;
-                }
+            this.loseLife();
+        }
 
-                // Handle tunnel teleportation
-                if (nextPos.x === 27 && this.currentGridX === 0) this.x = nextPos.x * CELL_SIZE + GHOST_POSITION_OFFSET.x;
-                if (nextPos.x === 0 && this.currentGridX === 27) this.x = 0 + GHOST_POSITION_OFFSET.x;
-            } else {
-                this.isMoving = false;
-                this.x = this.currentGridX * CELL_SIZE + GHOST_POSITION_OFFSET.x;
-                this.y = this.currentGridY * CELL_SIZE + GHOST_POSITION_OFFSET.y;
-                this.nextDirection = this.chooseNextDirection();
+        loseLife() {
+            this.lives--;
+            
+            if (this.lives < 0) {
+                this.triggerGameOver();
+                return;
             }
 
-            this.element.style.left = `${this.x}px`;
-            this.element.style.top = `${this.y}px`;
+            this.resetLevel();
         }
 
-        reset() {
-            const config = GHOST_CONFIG[this.id]; // Get original starting position
-            this.x = config.startX * CELL_SIZE + GHOST_POSITION_OFFSET.x;
-            this.y = config.startY * CELL_SIZE + GHOST_POSITION_OFFSET.y;
-            this.currentGridX = config.startX;
-            this.currentGridY = config.startY;
-            this.direction = this.getRandomDirection();
-            this.nextDirection = this.direction;
-            this.isMoving = false;
-            this.isVulnerable = false;
-            this.isEaten = false;
-            this.speed = GHOST_SPEED;
-            this.element.innerHTML = GHOST_CONFIG[this.id].character;
-            this.element.style.color = this.originalColor;
-            this.stopFlashing();
-            this.update(); // Immediately update position
-        }
-    }
-
-    // Initialize ghosts
-    const ghosts = {};
-    for (const [id, config] of Object.entries(GHOST_CONFIG)) {
-        ghosts[id] = new Ghost(id, config);
-    }
-
-    // Add event listener for mode changes
-    document.addEventListener('ghostModeChanged', () => {
-        Object.values(ghosts).forEach(ghost => {
-            if (!ghost.isVulnerable && !ghost.isEaten) {
-                ghost.shouldReverseDirection = true;
-            }
-        });
-    }); 
-
-    // Add game state
-    let lives = 2; //there are three lives. the last life is 0(for pacman life element indexing)
-    let isImmune = false;
-    let immunityTime = 2000; // 2 seconds immunity after collision
-    let gameover = false;
-    let score = 0;
-
-    function handleCollision(ghost) {
-        // If ghost is vulnerable, eat it
-        if (ghost.isVulnerable) {
-            eatGhost(ghost);
-            return;
-        }
-        
-        // If pacman is immune or the ghost is already eaten, do nothing
-        if (isImmune || ghost.isEaten) return;
-
-        lives--;
-        console.log(`Collision! Lives remaining: ${lives}`);
-
-        // Reset all ghosts
-        Object.values(ghosts).forEach(ghost => ghost.reset());
-
-        // Apply fade-in effect to maze
-        const overlay = document.getElementById('fade-overlay');
-        if (overlay && lives > -1) {
-            overlay.style.opacity = '1';
-            overlay.style.backgroundColor = 'black';
-            setTimeout(() => {
-                overlay.style.opacity = '0';
-            }, 800); // Duration of fade-in and fade-out animation
-        }
-
-        // Reset Pac-Man position
-        const pacman = document.getElementById('pacman');
-        pacman.style.display = 'none';
-        setTimeout(() => {
+        resetLevel() {
+            // Reset ghosts and Pac-Man
+            Object.values(ghosts).forEach(ghost => ghost.reset());
             resetPacmanPosition();
-            pacman.style.display = 'block';
-        }, 900);
 
-        if (lives === -1) { // Lives are over
+            // Temporary immunity
+            this.isImmune = true;
+            setTimeout(() => { this.isImmune = false; }, GAME_CONFIG.IMMUNITY_TIME);
+
+            // Update life indicators
+            this.updateLifeDisplay();
+        }
+
+        eatGhost(ghost) {
+            ghost.makeEaten();
+            this.score += 200;
+            this.updateScoreDisplay();
+        }
+
+        updateScoreDisplay() {
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            if (scoreDisplay) {
+                scoreDisplay.innerText = `Score: ${this.score}`;
+            }
+        }
+
+        updateLifeDisplay() {
+            const lifeElements = document.querySelectorAll('.pacman-life');
+            lifeElements.forEach((el, index) => {
+                el.style.visibility = index < this.lives ? 'visible' : 'hidden';
+            });
+        }
+
+        triggerGameOver() {
+            this.gameOver = true;
             const gameOverAlert = document.querySelector('.game-over');
             gameOverAlert.style.display = 'block';
             overlay.style.opacity = '1';
             overlay.style.backgroundColor = '';
             console.log('Game Over!');
             gameover = true;
-            return;
-        }
-
-        // Temporary immunity after respawn
-        isImmune = true;
-        setTimeout(() => { isImmune = false; }, immunityTime);
-
-        // Remove or hide one life indicator
-        const lifeElements = document.querySelectorAll('.pacman-life');
-        if (lifeElements[lives]) {
-            lifeElements[lives].style.visibility = 'hidden';
         }
     }
 
-    function eatGhost(ghost) {
-        ghost.makeEaten();
-        
-        // Increase score
-        score += 200; // Base points for eating a ghost
-        
-        // Update score display if it exists
-        const scoreDisplay = document.getElementById('scoreDisplay');
-        if (scoreDisplay) {
-            scoreDisplay.innerText = `Score: ${score}`;
-        }
-        
-        // Play eat ghost sound if exists
-        const eatGhostSound = document.getElementById('eatGhostSound');
-        if (eatGhostSound) {
-            eatGhostSound.play();
-        }
-        
-        console.log(`Ate ${ghost.id}! Score: ${score}`);
+    // Initialization
+    const gameStateManager = new GameStateManager();
+
+    const ghosts = Object.entries(GHOST_CONFIGS).reduce((acc, [id, config]) => {
+        acc[id] = new Ghost(id, config, ghostStateManager);
+        return acc;
+    }, {});
+
+    // Handle power pellet collection
+    document.addEventListener('powerPelletCollected', () => {
+        Object.values(ghosts).forEach(ghost => ghost.makeVulnerable());
+    });
+
+      // Game Loop
+      function ghostLoop(timestamp) {
+        if (gameStateManager.gameOver) return;
+
+        // Update ghost state manager
+        ghostStateManager.update(timestamp);
+
+        // Update individual ghosts and check collisions
+        Object.values(ghosts).forEach(ghost => {
+            ghost.update();
+
+            // Check for collision with Pac-Man
+            const pacman = document.getElementById('pacman');
+            if (pacman && ghost.checkCollision(
+                parseInt(pacman.style.left), 
+                parseInt(pacman.style.top)
+            )) {
+                gameStateManager.handleCollision(ghost);
+            }
+        });
+
+        requestAnimationFrame(ghostLoop);
     }
 
     function updateGhosts() {
