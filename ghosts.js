@@ -345,11 +345,11 @@ document.addEventListener("DOMContentLoaded", () => {
         chooseDirectionToTarget(targetX, targetY) {
             // Find possible directions at current intersection
             const possibleDirections = ['up', 'down', 'left', 'right'].filter(dir => {
-                const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, dir);
+                const nextPos = this.getNextPosition(this.state.gridPosition.x, this.state.gridPosition.y, dir);
                 return this.isValidMove(nextPos.x, nextPos.y);
             });
 
-            // Don't reverse direction unless it's the only option
+             // Don't reverse direction unless it's the only option
             const oppositeDir = {
                 'up': 'down', 'down': 'up',
                 'left': 'right', 'right': 'left'
@@ -358,30 +358,30 @@ document.addEventListener("DOMContentLoaded", () => {
             // Exception: Reverse direction when mode changes
             if (this.shouldReverseDirection) {
                 this.shouldReverseDirection = false;
-                if (possibleDirections.includes(oppositeDir[this.direction])) {
-                    return oppositeDir[this.direction];
+                if (possibleDirections.includes(oppositeDir[this.state.direction])) {
+                    return oppositeDir[this.state.direction];
                 }
             }
 
             const filteredDirections = possibleDirections.filter(dir =>
-                dir !== oppositeDir[this.direction]
+                dir !== oppositeDir[this.state.direction]
             );
 
             const validDirections = filteredDirections.length > 0 ?
                 filteredDirections : possibleDirections;
 
-            if (validDirections.length === 0) return this.direction;
+            if (validDirections.length === 0) return this.state.direction;
             if (validDirections.length === 1) return validDirections[0];
 
-            // Calculate which direction gets us closest to the target
+            // Choose direction closest to target
             return validDirections.reduce((bestDir, currentDir) => {
-                let nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, currentDir);
+                let nextPos = this.getNextPosition(this.state.gridPosition.x, this.state.gridPosition.y, currentDir);
                 let currentDistance = Math.sqrt(
                     Math.pow(nextPos.x - targetX, 2) +
                     Math.pow(nextPos.y - targetY, 2)
                 );
 
-                let bestPos = this.getNextPosition(this.currentGridX, this.currentGridY, bestDir);
+                let bestPos = this.getNextPosition(this.state.gridPosition.x, this.state.gridPosition.y, bestDir);
                 let bestDistance = Math.sqrt(
                     Math.pow(bestPos.x - targetX, 2) +
                     Math.pow(bestPos.y - targetY, 2)
