@@ -207,10 +207,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         isAtGridCenter() {
-            const gridAlignedX = Math.round(this.x / CELL_SIZE) * CELL_SIZE + GHOST_POSITION_OFFSET.x;
-            const gridAlignedY = Math.round(this.y / CELL_SIZE) * CELL_SIZE + GHOST_POSITION_OFFSET.y;
-            return Math.abs(this.x - gridAlignedX) < GRID_SNAP_THRESHOLD &&
-                Math.abs(this.y - gridAlignedY) < GRID_SNAP_THRESHOLD;
+            const gridAlignedX = Math.round(this.state.position.x / GAME_CONFIG.CELL_SIZE) * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.x;
+            const gridAlignedY = Math.round(this.state.position.y / GAME_CONFIG.CELL_SIZE) * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.y;
+            return Math.abs(this.state.position.x - gridAlignedX) < GAME_CONFIG.GRID_SNAP_THRESHOLD &&
+                   Math.abs(this.state.position.y - gridAlignedY) < GAME_CONFIG.GRID_SNAP_THRESHOLD;
         }
 
         isValidMove(gridX, gridY) {
@@ -220,11 +220,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // When eaten, ghosts can move through any path and the ghost house
-            if (this.isEaten) {
+            if (this.state.isEaten) {
                 return mazeGrid[gridY][gridX] !== 0; // Can move through anything except walls
             }
 
-            // Allow movement on paths (1), ghost house entrance (2) and ghost house (3)
+            // // Allow movement on paths, ghost house entrance, ghost house
+            // return [1, 2, 3, 4].includes(mazeGrid[gridY][gridX]);
+
+             // Allow movement on paths (1), ghost house entrance (2) and ghost house (3)
             return mazeGrid[gridY][gridX] === 1 ||
                 mazeGrid[gridY][gridX] === 2 ||
                 mazeGrid[gridY][gridX] === 3 ||
