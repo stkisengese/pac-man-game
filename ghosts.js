@@ -154,9 +154,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const gridAlignedY = Math.round(this.y / CELL_SIZE) * CELL_SIZE + GHOST_POSITION_OFFSET.y;
             return Math.abs(this.x - gridAlignedX) < GRID_SNAP_THRESHOLD &&
                 Math.abs(this.y - gridAlignedY) < GRID_SNAP_THRESHOLD;
+            return Math.abs(this.x - gridAlignedX) < GRID_SNAP_THRESHOLD &&
+                Math.abs(this.y - gridAlignedY) < GRID_SNAP_THRESHOLD;
         }
 
         isValidMove(gridX, gridY) {
+            if (gridY < 0 || gridY >= mazeGrid.length ||
             if (gridY < 0 || gridY >= mazeGrid.length ||
                 gridX < 0 || gridX >= mazeGrid[0].length) {
                 return false;
@@ -183,6 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
         getNextPosition(currentX, currentY, dir) {
             let nextX = currentX;
             let nextY = currentY;
+
+            switch (dir) {
 
             switch (dir) {
                 case "right": nextX++; break;
@@ -305,6 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 'left': 'right', 'right': 'left'
             };
             const filteredDirections = possibleDirections.filter(dir =>
+            const filteredDirections = possibleDirections.filter(dir =>
                 dir !== oppositeDir[this.direction]
             );
 
@@ -417,6 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, this.direction);
             if (this.isValidMove(nextPos.x, nextPos.y)) {
                 this.isMoving = true;
+                switch (this.direction) {
                 switch (this.direction) {
                     case "right": this.x += this.speed; break;
                     case "left": this.x -= this.speed; break;

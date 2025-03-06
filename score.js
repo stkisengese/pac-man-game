@@ -1,6 +1,6 @@
 import { collectDot } from './maze.js';
 
-let score=0
+export let score=0
 let highscore = localStorage.getItem('highscore') || 0;
 
 
@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const pacman = document.getElementById('pacman')
     const scoreElement = document.getElementById('score')
     const highScoreElement = document.getElementById('high-score-display')
-
     function updateScore(points) {
         score += points;
         scoreElement.textContent = `${score}`;
@@ -18,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('highscore', highscore)
             highScoreElement.textContent = `${highscore}`;
         }
+        
     }
 
     function checkCollision() {
