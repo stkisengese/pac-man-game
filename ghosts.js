@@ -162,11 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return false;
             }
 
-            // When eaten, ghosts can move through any path and the ghost house
-            if (this.state.isEaten) {
-                return mazeGrid[gridY][gridX] !== 0; // Can move through anything except walls
-            }
-
             // // Allow movement on paths, ghost house entrance, ghost house
             // return [1, 2, 3, 4].includes(mazeGrid[gridY][gridX]);
 
@@ -199,144 +194,146 @@ document.addEventListener("DOMContentLoaded", () => {
             return this.handleTunnel(nextX, nextY);
         }
 
-        calculateChaseTarget(ghostId, pacmanX, pacmanY, pacmanDirection) {
-            const pacmanGridX = Math.floor(pacmanX / GAME_CONFIG.CELL_SIZE);
-            const pacmanGridY = Math.floor(pacmanY / GAME_CONFIG.CELL_SIZE);
+        updateTargetPosition(pacmanX, pacmanY, pacmanDirection) {
+            // Convert pacman pixel position to grid position
+            const pacmanGridX = Math.round((pacmanX - GHOST_POSITION_OFFSET.x) / CELL_SIZE);
+            const pacmanGridY = Math.round((pacmanY - GHOST_POSITION_OFFSET.y) / CELL_SIZE);
 
-            switch (ghostId) {
-                case 'blinky': // Red ghost - directly targets Pacman
-                    return { x: pacmanGridX, y: pacmanGridY };
+            if (this.isVulnerable) {
+                // Frightened mode: random target (already handled by random movement)
+                this.mode = "frightened";
+                return;
+            }
 
-                case 'pinky': // Pink ghost - targets 4 tiles ahead of Pacman
-                    let targetX = pacmanGridX;
-                    let targetY = pacmanGridY;
+            // Toggle between scatter and chase modes periodically
+            // This is typically handled with a timer system, simplified here
+            if (this.mode !== "frightened") {
+                // For now, we'll focus on chase mode
+                this.mode = "chase";
+            }
 
-                    // Calculate position 4 tiles ahead based on Pacman's direction
-                    switch (pacmanDirection) {
-                        case 'up':
-                            targetY -= 4;
-                            targetX -= 4;
-                            break;
-                        case 'down': targetY += 4; break;
-                        case 'left': targetX -= 4; break;
-                        case 'right': targetX += 4; break;
-                    }
+            if (this.mode === "scatter") {
+                this.target = this.scatterTarget;
+            } else if (this.mode === "chase") {
+                // Each ghost has a unique targeting strategy
+                switch (this.id) {
+                    case "blinky": // Red ghost - Direct chase
+                        this.target = { x: pacmanGridX, y: pacmanGridY };
+                        break;
 
-                    return { x: targetX, y: targetY };
+                    case "pinky": // Pink ghost - Ambush (4 tiles ahead of Pacman)
+                        let targetX = pacmanGridX;
+                        let targetY = pacmanGridY;
 
-                case 'inky': // Cyan ghost - uses vector from Blinky to determine target
-                    const blinky = ghosts['blinky'];
-                    const blinkyGridX = Math.floor(blinky.state.position.x / GAME_CONFIG.CELL_SIZE);
-                    const blinkyGridY = Math.floor(blinky.state.position.y / GAME_CONFIG.CELL_SIZE);
+                        // Calculate position 4 tiles ahead based on Pacman's direction
+                        switch (pacmanDirection) {
+                            case "up":
+                                targetY -= 4;
+                                targetX -= 4;
+                                break;
+                            case 'down': targetY += 4; break;
+                            case 'left': targetX -= 4; break;
+                            case 'right': targetX += 4; break;
+                        }
 
-                    // First, get position 2 tiles ahead of Pacman
-                    let pivotX = pacmanGridX;
-                    let pivotY = pacmanGridY;
+                        this.target = { x: targetX, y: targetY };
+                        break;
 
-                    switch (pacmanDirection) {
-                        case 'up':
-                            pivotY -= 2;
-                            pivotX -= 2;
-                            break;
-                        case 'down': pivotY += 2; break;
-                        case 'left': pivotX -= 2; break;
-                        case 'right': pivotX += 2; break;
-                    }
+                    case "inky": // // Cyan ghost - uses vector from Blinky to determine target
+                        let inkyTargetX = pacmanGridX;
+                        let inkyTargetY = pacmanGridY;
 
-                    // Then, calculate the vector from Blinky to this position and double it
-                    const vectorX = pivotX - blinkyGridX;
-                    const vectorY = pivotY - blinkyGridY;
+                        // First, find the point 2 tiles ahead of Pacman
+                        switch (pacmanDirection) {
+                            case "up":
+                                inkyTargetY -= 2;
+                                inkyTargetX -= 2;
+                                break;
+                            case "down": inkyTargetY += 2; break;
+                            case "left": inkyTargetX -= 2; break;
+                            case "right": inkyTargetX += 2; break;
+                        }
 
-                    return {
-                        x: pivotX + vectorX,
-                        y: pivotY + vectorY
-                    };
+                        // Get Blinky's position
+                        const blinky = ghosts["blinky"];
+                        const blinkyGridX = Math.round((blinky.x - GHOST_POSITION_OFFSET.x) / CELL_SIZE);
+                        const blinkyGridY = Math.round((blinky.y - GHOST_POSITION_OFFSET.y) / CELL_SIZE);
 
-                case 'clyde': // Orange ghost - targets Pacman when far, scatters when close
-                    const distance = Math.sqrt(
-                        Math.pow(pacmanGridX - this.state.gridPosition.x, 2) +
-                        Math.pow(pacmanGridY - this.state.gridPosition.y, 2)
-                    );
-                    return distance < 8 ? { x: 0, y: 30 } : { x: pacmanGridX, y: pacmanGridY };
+                        // Calculate the vector from Blinky to the point ahead of Pacman
+                        const vectorX = inkyTargetX - blinkyGridX;
+                        const vectorY = inkyTargetY - blinkyGridY;
+
+                        // Double the vector to find Inky's target
+                        this.target = {
+                            x: blinkyGridX + (vectorX * 2),
+                            y: blinkyGridY + (vectorY * 2)
+                        };
+                        break;
+
+                    case "clyde": // Orange ghost - Chase when far, scatter when close
+                        const distanceToPacman = Math.sqrt(
+                            Math.pow(this.currentGridX - pacmanGridX, 2) +
+                            Math.pow(this.currentGridY - pacmanGridY, 2)
+                        );
+
+                        if (distanceToPacman > 8) {
+                            // Chase directly if distance > 8 tiles
+                            this.target = { x: pacmanGridX, y: pacmanGridY };
+                        } else {
+                            // Otherwise retreat to scatter position
+                            this.target = this.scatterTarget;
+                        }
+                        break;
+                }
             }
         }
 
         chooseNextDirection() {
-            // Eaten ghosts always target ghost house
-            if (this.state.isEaten) {
-                return this.chooseDirectionToTarget(14, 11);
+            if (this.isVulnerable) {
+                // During frightened mode, move randomly
+                return this.chooseRandomDirection();
             }
 
-            // Frightened mode - random direction
-            if (this.state.isVulnerable) {
-                return this.chooseNextDirectionFrightened();
-            }
-
-            // Get current target based on mode
-            const pacman = document.getElementById('pacman');
-            const pacmanX = parseInt(pacman.style.left);
-            const pacmanY = parseInt(pacman.style.top);
-            const pacmanDirection = window.pacmanDirection || 'right';
-
-            const target = this.stateManager.getCurrentTarget(
-                this.id, pacmanX, pacmanY, pacmanDirection
-            );
-
-            return this.chooseDirectionToTarget(target.x, target.y);
-        }
-
-        chooseDirectionToTarget(targetX, targetY) {
-            // Find possible directions at current intersection
             const possibleDirections = ['up', 'down', 'left', 'right'].filter(dir => {
-                const nextPos = this.getNextPosition(this.state.gridPosition.x, this.state.gridPosition.y, dir);
+                const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, dir);
                 return this.isValidMove(nextPos.x, nextPos.y);
             });
 
-             // Don't reverse direction unless it's the only option
+            // Don't reverse direction unless it's the only option
             const oppositeDir = {
                 'up': 'down', 'down': 'up',
                 'left': 'right', 'right': 'left'
             };
-
-            // Exception: Reverse direction when mode changes
-            if (this.shouldReverseDirection) {
-                this.shouldReverseDirection = false;
-                if (possibleDirections.includes(oppositeDir[this.state.direction])) {
-                    return oppositeDir[this.state.direction];
-                }
-            }
-
             const filteredDirections = possibleDirections.filter(dir =>
-                dir !== oppositeDir[this.state.direction]
+                dir !== oppositeDir[this.direction]
             );
 
             const validDirections = filteredDirections.length > 0 ?
                 filteredDirections : possibleDirections;
 
-            if (validDirections.length === 0) return this.state.direction;
-            if (validDirections.length === 1) return validDirections[0];
+            if (validDirections.length === 0) return this.direction;
 
-            // Choose direction closest to target
-            return validDirections.reduce((bestDir, currentDir) => {
-                let nextPos = this.getNextPosition(this.state.gridPosition.x, this.state.gridPosition.y, currentDir);
-                let currentDistance = Math.sqrt(
-                    Math.pow(nextPos.x - targetX, 2) +
-                    Math.pow(nextPos.y - targetY, 2)
+            // Calculate distances to target for each valid direction
+            const directionDistances = validDirections.map(dir => {
+                const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, dir);
+                const distance = Math.sqrt(
+                    Math.pow(nextPos.x - this.target.x, 2) +
+                    Math.pow(nextPos.y - this.target.y, 2)
                 );
+                return { direction: dir, distance: distance };
+            });
 
-                let bestPos = this.getNextPosition(this.state.gridPosition.x, this.state.gridPosition.y, bestDir);
-                let bestDistance = Math.sqrt(
-                    Math.pow(bestPos.x - targetX, 2) +
-                    Math.pow(bestPos.y - targetY, 2)
-                );
+            // Sort by distance (ascending)
+            directionDistances.sort((a, b) => a.distance - b.distance);
 
-                return currentDistance < bestDistance ? currentDir : bestDir;
-            }, validDirections[0]);
+            // Return the direction that gets closest to the target
+            return directionDistances[0].direction;
         }
 
-        chooseNextDirectionFrightened() {
+        // Renamed the original random movement function
+        chooseRandomDirection() {
             const possibleDirections = ['up', 'down', 'left', 'right'].filter(dir => {
-                const nextPos = this.getNextPosition(this.state.gridPosition.x, this.state.gridPosition.y, dir);
+                const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, dir);
                 return this.isValidMove(nextPos.x, nextPos.y);
             });
 
