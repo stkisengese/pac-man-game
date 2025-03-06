@@ -391,6 +391,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         stopFlashing() {
             this.isFlashing = false;
+            this.mode = "chase";
             if (this.flashInterval) {
                 clearInterval(this.flashInterval);
                 this.flashInterval = null;
