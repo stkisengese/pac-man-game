@@ -519,13 +519,14 @@ export function ghostLoop() {
         return;
     }
     ghostAnimationId = requestAnimationFrame(ghostLoop);
+    
 }
 
 const timeElement = document.getElementById('time');
 let timerStart = false;
 
 function createTimer() {
-    if (timeLeft <= 0) {
+    if (timeLeft <= 0 || gameover == true) {
         clearInterval(timerInterval);
         // Handle game over
         // WORK IN PROGRESS
