@@ -1,5 +1,5 @@
 import { mazeGrid, resetPacmanPosition, changePacmanImage } from './maze.js';
-import { score } from './score.js';
+import { score, updateScore } from './score.js';
 // import { isGamePaused, initPauseSystem } from './pauseMenu.js';
 
 const ghosts = {};
@@ -573,10 +573,9 @@ function handleCollision(ghost) {
     if (isImmune) return;
 
     // If ghost is vulnerable, eat it instead of losing a life
-    if (ghost.isVulnerable) {
-        // // Add points for eating ghost
-        // const points = 200;
-        // score += points;
+    if (ghost.isVulnerable) {        
+        const points = 200;
+        updateScore(points)
         // document.getElementById('score').textContent = score;
 
         // Reset the ghost
