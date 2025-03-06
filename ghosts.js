@@ -1,204 +1,147 @@
 import { mazeGrid, resetPacmanPosition, changePacmanImage } from './maze.js';
+import { score } from './score.js';
+// import { isGamePaused, initPauseSystem } from './pauseMenu.js';
+
+const ghosts = {};
+
+// Add game state
+export let lives = 2; //there are three lives. the last life is 0(for pacman life elemnet indexing)
+let isImmune = false;
+let immunityTime = 2000; // 2 seconds immunity after collision
+export let gameover = false
+let timeLeft = 600; // 10 minutes in seconds
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Constants for better configuration
-    const GAME_CONFIG = {
-        CELL_SIZE: 18,
-        GHOST_SPEED: {
-            NORMAL: 1.4,
-            VULNERABLE: 0.7,
-            EATEN: 3.8
-        },
-        VULNERABLE_DURATION: 10000,
-        IMMUNITY_TIME: 2000,
-        GHOST_OFFSET: { x: 4, y: -7 },
-        GRID_SNAP_THRESHOLD: 1
-    };
-
-    // Centralized Ghost State Management
-    class GhostStateManager {
-        constructor() {
-            this.mode = 'scatter';
-            this.modeTimer = 0;
-            this.modePatterns = [
-                { mode: 'scatter', duration: 10000 },
-                { mode: 'chase', duration: 20000 },
-                { mode: 'scatter', duration: 7000 },
-                { mode: 'chase', duration: 20000 },
-                { mode: 'scatter', duration: 5000 },
-                { mode: 'chase', duration: 20000 },
-                { mode: 'scatter', duration: 5000 },
-                { mode: 'chase', duration: -1 }
-            ];
-            this.currentPatternIndex = 0;
-            this.previousMode = null;
-            this.scatterTargets = {
-                'blinky': { x: 25, y: 0 },  // Top-right
-                'pinky': { x: 2, y: 0 },    // Top-left
-                'inky': { x: 27, y: 30 },   // Bottom-right
-                'clyde': { x: 0, y: 30 }    // Bottom-left
-            };
-        }
-
-        update(deltaTime) {
-            if (this.mode === 'frightened') return;
-            
-            this.modeTimer += deltaTime;
-            const currentPattern = this.modePatterns[this.currentPatternIndex];
-
-            if (currentPattern.duration > 0 && this.modeTimer >= currentPattern.duration) {
-                this.advanceMode();
-            }
-        }
-
-        advanceMode() {
-            this.modeTimer = 0;
-            this.currentPatternIndex = (this.currentPatternIndex + 1) % this.modePatterns.length;
-            this.mode = this.modePatterns[this.currentPatternIndex].mode;
-            
-            // Dispatch mode change event
-            document.dispatchEvent(new CustomEvent('ghostModeChanged'));
-        }
-
-        setFrightenedMode() {
-            this.previousMode = this.mode;
-            this.mode = 'frightened';
-        }
-
-        revertFromFrightenedMode() {
-            this.mode = this.previousMode || 'chase';
-        }
-
-        getCurrentTarget(ghostId, pacmanX, pacmanY, pacmanDirection) {
-            // Ensure the ghost exists and is properly initialized before calculating the target
-            const ghost = ghosts[ghostId];
-            
-            if (!ghost || !ghost.calculateChaseTarget) {
-                console.error(`Ghost ${ghostId} not initialized properly!`);
-                return { x: pacmanX, y: pacmanY }; // Return pacman's position if ghost is not initialized
-            }
-
-            if (this.mode === 'scatter') {
-                return this.scatterTargets[ghostId];
-            } else if (this.mode === 'frightened') {
-                // Random target in frightened mode
-                return {
-                    x: Math.floor(Math.random() * mazeGrid[0].length),
-                    y: Math.floor(Math.random() * mazeGrid.length)
-                };
-            }
-            
-            // Chase mode - use ghost-specific targeting
-            return ghost.calculateChaseTarget(ghostId, pacmanX, pacmanY, pacmanDirection);
-        }
-    }
-
-    // Initialize ghost manager
-    const ghostStateManager = new GhostStateManager();
-
-    // Ghost configuration
+    // Refined Ghost Configuration with SVG characters
     const GHOST_CONFIGS = {
         blinky: {
             startPos: { x: 14, y: 11 },
             color: 'red',
+            frightenedColor: 'blue',
             character: (color) => `
                 <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}"/>
-                    <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
-                    <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
-                    <circle class="pupil" cx="7" cy="8" r="1" fill="black"/>
-                    <circle class="pupil" cx="13" cy="8" r="1" fill="black"/>
+                <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}">
+                <animate attributeName="d"
+                values="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19;
+                M1,20 L1,9 C1,4.5 5,1 10,1 C15,1 19,4.5 19,9 L19,20 L15,16 L13,20 L10,16 L7,20 L5,16 L1,20"
+                dur="0.5s"
+                repeatCount="indefinite"/>
+                </path>
+                <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
+                <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
+                <circle class="pupil" cx="7" cy="8" r="1" fill="black">
+                <animate attributeName="cx" values="6;8;6" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <circle class="pupil" cx="13" cy="8" r="1" fill="black">
+                <animate attributeName="cx" values="12;14;12" dur="2s" repeatCount="indefinite"/>
+                </circle>
                 </svg>`
         },
         pinky: {
             startPos: { x: 12, y: 14 },
             color: 'pink',
+            frightenedColor: 'blue',
             character: (color) => `
                 <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}"/>
-                    <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
-                    <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
-                    <circle class="pupil" cx="7" cy="8" r="1" fill="black"/>
-                    <circle class="pupil" cx="13" cy="8" r="1" fill="black"/>
+                <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}"/>
+                <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
+                <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
+                <circle class="pupil" cx="7" cy="8" r="1" fill="black"/>
+                <circle class="pupil" cx="13" cy="8" r="1" fill="black"/>
                 </svg>`
         },
         inky: {
             startPos: { x: 14, y: 14 },
             color: 'cyan',
+            frightenedColor: 'blue',
             character: (color) => `
                 <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}"/>
-                    <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
-                    <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
-                    <circle class="pupil" cx="7" cy="8" r="1" fill="black"/>
-                    <circle class="pupil" cx="13" cy="8" r="1" fill="black"/>
+                <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}"/>
+                <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
+                <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
+                <circle class="pupil" cx="7" cy="8" r="1" fill="black"/>
+                <circle class="pupil" cx="13" cy="8" r="1" fill="black"/>
                 </svg>`
         },
         clyde: {
             startPos: { x: 16, y: 14 },
             color: 'orange',
+            frightenedColor: 'blue',
             character: (color) => `
                 <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}"/>
-                    <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
-                    <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
-                    <circle class="pupil" cx="7" cy="8" r="1" fill="black"/>
-                    <circle class="pupil" cx="13" cy="8" r="1" fill="black"/>
+                <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}"/>
+                <circle class="eye" cx="7" cy="8" r="2" fill="white"/>
+                <circle class="eye" cx="13" cy="8" r="2" fill="white"/>
+                <circle class="pupil" cx="7" cy="8" r="1" fill="black"/>
+                <circle class="pupil" cx="13" cy="8" r="1" fill="black"/>
                 </svg>`
-        },
+        }
+    };
+
+    const CELL_SIZE = 18;
+    const GHOST_POSITION_OFFSET = {
+        x: 4,  // Horizontal offset to center ghost in path
+        y: -7  // Vertical offset to center ghost in path
+    };
+    const GHOST_SPEED = 1;
+    const GRID_SNAP_THRESHOLD = 1;
+
+    const PACMAN_START_POS = {
+        x: 13 * CELL_SIZE + GHOST_POSITION_OFFSET.x,
+        y: 23 * CELL_SIZE + GHOST_POSITION_OFFSET.y
     };
 
     class Ghost {
-        constructor(id, config, stateManager) {
+        constructor(id, config) {
+            this.element = document.getElementById(id);
             this.id = id;
-            this.stateManager = stateManager;
+            this.mode = "scatter";
+            this.target = { x: 0, y: 0 };
+            this.scatterTarget = this.getScatterTarget();
+            this.x = config.startPos.x * CELL_SIZE + GHOST_POSITION_OFFSET.x;
+            this.y = config.startPos.y * CELL_SIZE + GHOST_POSITION_OFFSET.y;
+            this.currentGridX = config.startPos.x;
+            this.currentGridY = config.startPos.y;
+            this.direction = this.getRandomDirection();
+            this.nextDirection = this.direction;
+            this.isMoving = false;
+            this.isVulnerable = false;
+            this.speed = GHOST_SPEED;
             this.config = config;
-            this.originalColor = config.color;
-            
-            this.state = {
-                position: {
-                    x: config.startPos.x * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.x,
-                    y: config.startPos.y * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.y
-                },
-                gridPosition: { x: config.startPos.x, y: config.startPos.y },
-                direction: this.getRandomDirection(),
-                nextDirection: null,
-                speed: GAME_CONFIG.GHOST_SPEED.NORMAL,
-                isVulnerable: false,
-                isEaten: false,
-                shouldReverseDirection: false
-            };
 
-            this.element = this.createGhostElement();
-            this.setupEventListeners();
+            this.initializeGhost();
         }
 
-        createGhostElement() {
-            const element = document.getElementById(this.id);
-            element.innerHTML = this.config.character(this.originalColor);
-            this.updateElementStyle(element);
-            return element;
-        }
+        initializeGhost() {
+            // Create ghost SVG
+            this.updateGhostAppearance(this.config.color);
 
-        updateElementStyle(element) {
-            Object.assign(element.style, {
+            Object.assign(this.element.style, {
                 position: 'absolute',
-                width: '15px',
-                height: '15px',
-                left: `${this.state.position.x}px`,
-                top: `${this.state.position.y}px`,
-                color: this.originalColor,
+                width: '24px',
+                height: '24px',
+                left: `${this.x}px`,
+                top: `${this.y}px`,
+                visibility: 'visible',
                 transform: 'translate(-50%, -50%)',
                 zIndex: '900'
             });
         }
 
-        setupEventListeners() {
-            document.addEventListener('ghostModeChanged', () => {
-                if (!this.state.isVulnerable && !this.state.isEaten) {
-                    this.shouldReverseDirection = true;
-                }
-            });
+        updateGhostAppearance(color) {
+            // Use the character function to generate SVG based on color
+            this.element.innerHTML = this.config.character(color);
+        }
+
+        getScatterTarget() {
+            // Each ghost has a fixed scatter target (usually near a corner)
+            switch (this.id) {
+                case "blinky": return { x: 26, y: 0 }; // Top-right
+                case "pinky": return { x: 1, y: 0 };   // Top-left
+                case "inky": return { x: 26, y: 29 };  // Bottom-right
+                case "clyde": return { x: 1, y: 29 };  // Bottom-left
+                default: return { x: 0, y: 0 };
+            }
         }
 
         getRandomDirection() {
