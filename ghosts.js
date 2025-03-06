@@ -510,7 +510,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Game loop for ghost movement
-let ghostAnimationId;
 export function ghostLoop() {
     updateGhosts();
     if (gameover == true) {
