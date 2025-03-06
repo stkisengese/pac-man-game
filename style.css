@@ -194,11 +194,12 @@ body {
     height: 100px;
     display: flex;
     justify-content: center;
+    margin-bottom: 30px;
 }
 .menu-button{
     align-self: normal;
     background-color: rgb(252, 199, 63);
-    border: calc();
+    border-width: 4px;
     border-radius: 8px;
     border-color: red;
     height: 30%;
@@ -231,4 +232,27 @@ body {
 }
 .fruit-image{
     height: 50px;
+}
+/* Add a hover effect to make the button pulse */
+.menu-button:hover {
+    transform: scale(1.1); /* Slightly increase the size */
+    box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.7); /* Enhance the shadow on hover */
+}
+
+/* Add a keyframe animation for a continuous pulsing effect */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Apply the animation to the button */
+.menu-button.pulse {
+    animation: pulse 1.5s infinite; /* Apply the pulse animation */
 }
