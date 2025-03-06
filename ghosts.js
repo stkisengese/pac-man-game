@@ -341,321 +341,257 @@ document.addEventListener("DOMContentLoaded", () => {
                 'up': 'down', 'down': 'up',
                 'left': 'right', 'right': 'left'
             };
-
             const filteredDirections = possibleDirections.filter(dir =>
-                dir !== oppositeDir[this.state.direction]
+                dir !== oppositeDir[this.direction]
             );
 
-            return filteredDirections.length > 0 
+            return filteredDirections.length > 0
                 ? filteredDirections[Math.floor(Math.random() * filteredDirections.length)]
                 : possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
         }
 
-        update() {
-            // Update grid position when at grid center
-            if (this.isAtGridCenter()) {
-                this.state.gridPosition = {
-                    x: Math.round((this.state.position.x - GAME_CONFIG.GHOST_OFFSET.x) / GAME_CONFIG.CELL_SIZE),
-                    y: Math.round((this.state.position.y - GAME_CONFIG.GHOST_OFFSET.y) / GAME_CONFIG.CELL_SIZE)
-                };
-
-                // Choose new direction at intersections
-                this.state.nextDirection = this.chooseNextDirection();
-                this.state.direction = this.state.nextDirection;
-            }
-
-            // Check next position validity
-            const nextPos = this.getNextPosition(this.state.gridPosition.x, this.state.gridPosition.y, this.state.direction);
-            
-            if (this.isValidMove(nextPos.x, nextPos.y)) {
-                // Move ghost based on direction
-                switch (this.state.direction) {
-                    case "right": this.state.position.x += this.state.speed; break;
-                    case "left": this.state.position.x -= this.state.speed; break;
-                    case "up": this.state.position.y -= this.state.speed; break;
-                    case "down": this.state.position.y += this.state.speed; break;
-                }
-
-                // Handle tunnel teleportation
-                if (nextPos.x === 27 && this.state.gridPosition.x === 0) {
-                    this.state.position.x = nextPos.x * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.x;
-                }
-                if (nextPos.x === 0 && this.state.gridPosition.x === 27) {
-                    this.state.position.x = 0 + GAME_CONFIG.GHOST_OFFSET.x;
-                }
-            } else {
-                // Snap to grid if move is invalid
-                this.state.position.x = this.state.gridPosition.x * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.x;
-                this.state.position.y = this.state.gridPosition.y * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.y;
-                
-                // Rechoose direction
-                this.state.nextDirection = this.chooseNextDirection();
-            }
-
-            // Update element position
-            this.element.style.left = `${this.state.position.x}px`;
-            this.element.style.top = `${this.state.position.y}px`;
-
-            // Check for return to ghost house if eaten
-            if (this.state.isEaten) {
-                this.checkReturnToGhostHouse();
-            }
-        }
-
-        checkReturnToGhostHouse() {
-            const ghostHousePosition = { x: 14, y: 11 };
-            const ghostHouseX = ghostHousePosition.x * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.x;
-            const ghostHouseY = ghostHousePosition.y * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.y;
-        
-            const distance = Math.sqrt(
-                Math.pow(this.state.position.x - ghostHouseX, 2) +
-                Math.pow(this.state.position.y - ghostHouseY, 2)
-            );
-        
-            // If the ghost reaches the ghost house
-            if (distance < GAME_CONFIG.CELL_SIZE / 2) {
-                // Pause or delay for animation before reviving
-                setTimeout(() => {
-                    this.revive(); // Revive the ghost after the delay
-                }, 500); // 500ms delay for example
-            }
-        }
-        
-
         makeVulnerable() {
-            if (this.state.isEaten) return;
+            this.mode = "frightened";
+            this.isVulnerable = true;
+            this.updateGhostAppearance(this.config.frightenedColor);
+            this.speed = GHOST_SPEED * 0.5; // Slower when vulnerable
 
-            this.state.isVulnerable = true;
-            this.state.speed = GAME_CONFIG.GHOST_SPEED.VULNERABLE;
-            
-            const ghostBody = this.element.querySelector('.ghost-body');
-            if (ghostBody) {
-                ghostBody.setAttribute('fill', 'blue');
-            }
+            // Start flashing near the end of vulnerability period
+            const flashingTimeout = setTimeout(() => {
+                if (this.isVulnerable) {
+                    this.startFlashing();
+                }
+            }, 7000); // Start flashing 3 seconds before vulnerability ends
 
-            this.stateManager.setFrightenedMode();
-            // this.reverseDirection();
-            this.shouldReverseDirection = true;
+            const vulnerabilityTimeout = setTimeout(() => {
+                this.isVulnerable = false;
+                this.updateGhostAppearance(this.config.color);
+                this.speed = GHOST_SPEED;
+                this.stopFlashing();
+            }, 10000); // 10 seconds of vulnerability
 
-            // Set timeout for vulnerability
-            setTimeout(() => this.endVulnerableState(), GAME_CONFIG.VULNERABLE_DURATION);
+            // Store timeouts so they can be cleared if needed
+            this.timeouts = {
+                flashing: flashingTimeout,
+                vulnerability: vulnerabilityTimeout
+            };
         }
 
-        endVulnerableState() {
-            if (this.state.isEaten) return;
-
-            this.state.isVulnerable = false;
-            this.state.speed = GAME_CONFIG.GHOST_SPEED.NORMAL;
-            
-            const ghostBody = this.element.querySelector('.ghost-body');
-            if (ghostBody) {
-                ghostBody.setAttribute('fill', this.originalColor);
-            }
-
-            // Only revert global mode if no ghosts are vulnerable
-            if (!Object.values(ghosts).some(ghost => ghost.state.isVulnerable)) {
-                this.stateManager.revertFromFrightenedMode();
-            }
+        startFlashing() {
+            this.isFlashing = true;
+            this.flashInterval = setInterval(() => {
+                if (this.isFlashing) {
+                    // Toggle between frightened color and white
+                    const currentColor = this.element.querySelector('.ghost-body').getAttribute('fill');
+                    const newColor = currentColor === this.config.frightenedColor ? 'white' : this.config.frightenedColor;
+                    this.updateGhostAppearance(newColor);
+                }
+            }, 250); // Flash 4 times per second
         }
 
-        makeEaten() {
-            if (this.state.isEaten) return;
-
-            this.state.isEaten = true;
-            this.state.isVulnerable = false;
-            this.state.speed = GAME_CONFIG.GHOST_SPEED.EATEN;
-            
-            this.element.innerHTML = '👀';
-            this.element.style.color = 'white';
-
-            console.log(`${this.id} has been eaten!`);
-        }
-
-        revive() {
-            this.state.isEaten = false;
-            this.element.innerHTML = this.config.character(this.originalColor);
-            this.element.style.color = this.originalColor;
-            this.state.speed = GAME_CONFIG.GHOST_SPEED.NORMAL;
-
-            console.log(`${this.id} has been revived!`);
+        stopFlashing() {
+            this.isFlashing = false;
+            if (this.flashInterval) {
+                clearInterval(this.flashInterval);
+                this.flashInterval = null;
+            }
         }
 
         checkCollision(pacmanX, pacmanY) {
-            // Don't check collision if already eaten
-            if (this.state.isEaten) return false;
-            
-            const collisionThreshold = GAME_CONFIG.CELL_SIZE / 2;
-            const dx = Math.abs(this.state.position.x - pacmanX);
-            const dy = Math.abs(this.state.position.y - pacmanY);
-            
+            const collisionThreshold = CELL_SIZE / 2;
+            const dx = Math.abs(this.x - pacmanX);
+            const dy = Math.abs(this.y - pacmanY);
             return dx < collisionThreshold && dy < collisionThreshold;
         }
 
+        update() {
+            if (this.isAtGridCenter()) {
+                this.currentGridX = Math.round((this.x - GHOST_POSITION_OFFSET.x) / CELL_SIZE);
+                this.currentGridY = Math.round((this.y - GHOST_POSITION_OFFSET.y) / CELL_SIZE);
+
+                // Choose new direction at intersections based on target
+                this.nextDirection = this.chooseNextDirection();
+                this.direction = this.nextDirection;
+            }
+
+            const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, this.direction);
+            if (this.isValidMove(nextPos.x, nextPos.y)) {
+                this.isMoving = true;
+                switch (this.direction) {
+                    case "right": this.x += this.speed; break;
+                    case "left": this.x -= this.speed; break;
+                    case "up": this.y -= this.speed; break;
+                    case "down": this.y += this.speed; break;
+                }
+
+                // Handle tunnel teleportation
+                if (nextPos.x === 27 && this.currentGridX === 0) this.x = nextPos.x * CELL_SIZE + GHOST_POSITION_OFFSET.x;
+                if (nextPos.x === 0 && this.currentGridX === 27) this.x = 0 + GHOST_POSITION_OFFSET.x;
+            } else {
+                this.isMoving = false;
+                this.x = this.currentGridX * CELL_SIZE + GHOST_POSITION_OFFSET.x;
+                this.y = this.currentGridY * CELL_SIZE + GHOST_POSITION_OFFSET.y;
+                this.nextDirection = this.chooseNextDirection();
+            }
+
+            this.element.style.left = `${this.x}px`;
+            this.element.style.top = `${this.y}px`;
+        }
+
         reset() {
-            const config = this.config;
-            this.state.position = {
-                x: config.startPos.x * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.x,
-                y: config.startPos.y * GAME_CONFIG.CELL_SIZE + GAME_CONFIG.GHOST_OFFSET.y
-            };
-            this.state.gridPosition = { x: config.startPos.x, y: config.startPos.y };
-            this.state.direction = this.getRandomDirection();
-            this.state.nextDirection = this.state.direction;
-            this.state.isVulnerable = false;
-            this.state.isEaten = false;
-            this.state.speed = GAME_CONFIG.GHOST_SPEED.NORMAL;
-            
-            this.element.innerHTML = this.config.character(this.originalColor);
-            this.element.style.color = this.originalColor;
-            
+            // Clear any active timeouts and intervals
+            if (this.timeouts) {
+                clearTimeout(this.timeouts.flashing);
+                clearTimeout(this.timeouts.vulnerability);
+            }
+            this.stopFlashing();
+
+            const startPos = this.config.startPos;
+            this.x = startPos.x * CELL_SIZE + GHOST_POSITION_OFFSET.x;
+            this.y = startPos.y * CELL_SIZE + GHOST_POSITION_OFFSET.y;
+            this.currentGridX = startPos.x;
+            this.currentGridY = startPos.y;
+            this.direction = this.getRandomDirection();
+            this.nextDirection = this.direction;
+            this.isMoving = false;
+            this.isVulnerable = false;
+            this.updateGhostAppearance(this.config.color);
+            this.speed = GHOST_SPEED;
             this.update(); // Immediately update position
         }
     }
 
-    // Game State Manager
-    class GameStateManager {
-        constructor() {
-            this.lives = 2;
-            this.score = 0;
-            this.isImmune = false;
-            this.gameOver = false;
-        }
-
-        handleCollision(ghost) {
-            if (this.isImmune || ghost.state.isEaten) return;
-
-            if (ghost.state.isVulnerable) {
-                this.eatGhost(ghost);
-                return;
-            }
-
-            this.loseLife();
-        }
-
-        loseLife() {
-            this.lives--;
-            
-            if (this.lives < 0) {
-                this.triggerGameOver();
-                return;
-            }
-
-            this.resetLevel();
-        }
-
-        resetLevel() {
-            // Reset ghosts and Pac-Man
-            Object.values(ghosts).forEach(ghost => ghost.reset());
-            resetPacmanPosition();
-
-            // Temporary immunity
-            this.isImmune = true;
-            setTimeout(() => { this.isImmune = false; }, GAME_CONFIG.IMMUNITY_TIME);
-
-            // Update life indicators
-            this.updateLifeDisplay();
-        }
-
-        eatGhost(ghost) {
-            ghost.makeEaten();
-            this.score += 200;
-            this.updateScoreDisplay();
-        }
-
-        updateScoreDisplay() {
-            const scoreDisplay = document.getElementById('scoreDisplay');
-            if (scoreDisplay) {
-                scoreDisplay.innerText = `Score: ${this.score}`;
-            }
-        }
-
-        updateLifeDisplay() {
-            const lifeElements = document.querySelectorAll('.pacman-life');
-            lifeElements.forEach((el, index) => {
-                el.style.visibility = index < this.lives ? 'visible' : 'hidden';
-            });
-        }
-
-        triggerGameOver() {
-            this.gameOver = true;
-            const gameOverAlert = document.querySelector('.game-over');
-            gameOverAlert.style.display = 'block';
-            overlay.style.opacity = '1';
-            overlay.style.backgroundColor = '';
-            console.log('Game Over!');
-            gameover = true;
-        }
-    }
-
     // Initialization
-    const gameStateManager = new GameStateManager();
-
-    const ghosts = Object.entries(GHOST_CONFIGS).reduce((acc, [id, config]) => {
-        acc[id] = new Ghost(id, config, ghostStateManager);
-        return acc;
-    }, {});
+    for (const [id, config] of Object.entries(GHOST_CONFIGS)) {
+        ghosts[id] = new Ghost(id, config);
+    }
 
     // Handle power pellet collection
     document.addEventListener('powerPelletCollected', () => {
         Object.values(ghosts).forEach(ghost => ghost.makeVulnerable());
     });
 
-      // Game Loop
-      function ghostLoop(timestamp) {
-        if (gameStateManager.gameOver) return;
-
-        // Update ghost state manager
-        ghostStateManager.update(timestamp);
-
-        // Update individual ghosts and check collisions
-        Object.values(ghosts).forEach(ghost => {
-            ghost.update();
-
-            // Check for collision with Pac-Man
-            const pacman = document.getElementById('pacman');
-            if (pacman && ghost.checkCollision(
-                parseInt(pacman.style.left), 
-                parseInt(pacman.style.top)
-            )) {
-                gameStateManager.handleCollision(ghost);
-            }
-        });
-
-        requestAnimationFrame(ghostLoop);
+    if (gameover == false) {
+        ghostLoop();
+    } else {
+        // TODO set game over text to visible
     }
-
-    function updateGhosts() {
-        const pacman = document.getElementById('pacman');
-        if (!pacman) return;
-
-        const pacmanX = parseInt(pacman.style.left);
-        const pacmanY = parseInt(pacman.style.top);
-
-        Object.values(ghosts).forEach(ghost => {
-            ghost.update();
-
-            // Check for collision
-            if (ghost.checkCollision(pacmanX, pacmanY)) {
-                gameStateManager.handleCollision(ghost);
-            }
-        });
-    }
-
-    let lastGhostLoopTime = 0; // track time for deltaTime in ghostLoop
-
-    // Game Loop for ghost movement
-    function ghostLoop(timestamp) {
-        if (gameStateManager.gameOver) return;
-
-        const deltaTime = timestamp - lastGhostLoopTime;
-        lastGhostLoopTime = timestamp;
-
-        // Update ghost state manager
-        ghostStateManager.update(deltaTime);
-
-        // Update individual ghosts and check collisions
-        updateGhosts(deltaTime);
-
-        requestAnimationFrame(ghostLoop);
-    }
-    ghostLoop(performance.now());
 });
+
+// Game loop for ghost movement
+let ghostAnimationId;
+export function ghostLoop() {
+    updateGhosts();
+    if (gameover == true) {
+        cancelAnimationFrame(ghostAnimationId);
+        return;
+    }
+    ghostAnimationId = requestAnimationFrame(ghostLoop);
+}
+
+const timeElement = document.getElementById('time');
+let timerStart = false;
+
+function createTimer() {
+    if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        // Handle game over
+        // WORK IN PROGRESS
+        return;
+    }
+    if (score > 0) {
+        timerStart = true;
+    }
+    if (timerStart) {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+
+        // Format time as MM:SS
+        const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        timeElement.textContent = formattedTime;
+    }
+}
+const timerInterval = setInterval(createTimer, 1000);
+
+function updateGhosts() {
+    const pacman = document.getElementById('pacman');
+    if (!pacman) return;
+
+    const pacmanX = parseInt(pacman.style.left);
+    const pacmanY = parseInt(pacman.style.top);
+
+    // Get Pacman's direction
+    const pacmanDirection = window.pacmanDirection || "right"; // Default to right if undefined
+
+    Object.values(ghosts).forEach(ghost => {
+        // Update target position based on current mode and Pacman position
+        ghost.updateTargetPosition(pacmanX, pacmanY, pacmanDirection);
+
+        // Update ghost position and check for collision
+        ghost.update();
+
+        // Check for collision
+        if (ghost.checkCollision(pacmanX, pacmanY)) {
+            handleCollision(ghost);
+        }
+    });
+}
+
+function handleCollision(ghost) {
+    if (isImmune) return;
+
+    // If ghost is vulnerable, eat it instead of losing a life
+    if (ghost.isVulnerable) {
+        // // Add points for eating ghost
+        // const points = 200;
+        // score += points;
+        // document.getElementById('score').textContent = score;
+
+        // Reset the ghost
+        ghost.reset();
+        return;
+    }
+
+    lives--;
+    console.log(`Collision! Lives remaining: ${lives}`);
+
+    // Reset all ghosts
+    Object.values(ghosts).forEach(ghost => ghost.reset());
+
+    // Apply fade-in effect to maze
+    const overlay = document.getElementById('fade-overlay');
+    if (overlay && lives > -1) {
+        overlay.style.opacity = '1';
+        overlay.style.backgroundColor = 'black';
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+        }, 800); // Duration of fade-in and fade-out animation
+    }
+
+    // Reset Pac-Man position
+    setTimeout(() => {
+        resetPacmanPosition();
+        pacman.style.display = 'block';
+    }, 900);
+
+    if (lives === -1 || timeLeft === 0) { // Lives are over
+        const gameOverAlert = document.querySelector('.game-over');
+        gameOverAlert.style.display = 'block';
+        overlay.style.opacity = '1';
+        overlay.style.backgroundColor = '';
+        console.log('Game Over!');
+        gameover = true;
+        return;
+    }
+
+    // Temporary immunity after respawn
+    isImmune = true;
+    setTimeout(() => { isImmune = false; }, immunityTime);
+
+    // Remove or hide one life indicator
+    const lifeElements = document.querySelectorAll('.pacman-life');
+    if (lifeElements[lives]) {
+        lifeElements[lives].style.visibility = 'hidden';
+    }
+}
