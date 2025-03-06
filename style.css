@@ -157,7 +157,7 @@ body {
 
 .pause-content button {
     background-color: #0066ff;
-    color: white;
+    color: rgb(255, 255, 255);
     border:calc();
     padding: 10px 20px;
     margin: 10px;
@@ -197,16 +197,38 @@ body {
 }
 .menu-button{
     align-self: normal;
+    background-color: rgb(252, 199, 63);
+    border: calc();
+    border-radius: 8px;
+    border-color: red;
+    height: 30%;
+    width: 15%;
+    border-bottom-right-radius: 2px;
+    border-top: 10px;
+    border-left: 6px;
+    
 }
 .pause-button {
     position: fixed;
     top: 10px;
     right: 10px;
-    background-color: yellow;
-    color: black;
+    background-color: orange;
+    color: rgb(0, 0, 0);
     border: none;
     padding: 10px 20px;
     cursor: pointer;
     font-family: 'Press Start 2P', sans-serif;
     
+}
+.fruit {
+    width: 18px;
+    height: 18px;
+    background-size: cover;
+    position: absolute;
+}
+.start-button{
+    background-color: rgb(255, 60, 0);
+}
+.fruit-image{
+    height: 50px;
 }
