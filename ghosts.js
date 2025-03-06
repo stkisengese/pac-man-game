@@ -11,7 +11,7 @@ let immunityTime = 2000; // 2 seconds immunity after collision
 export let gameover = false
 let timeLeft = 600; // 10 minutes in seconds
 
-document.addEventListener("DOMContentLoaded", () => {
+
     // Refined Ghost Configuration with SVG characters
     const GHOST_CONFIGS = {
         blinky: {
@@ -492,6 +492,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    const startButton = document.getElementById('start-button');
+    startButton.addEventListener('click', () => {
     // Initialization
     for (const [id, config] of Object.entries(GHOST_CONFIGS)) {
         ghosts[id] = new Ghost(id, config);
@@ -546,7 +548,7 @@ function createTimer() {
 }
 const timerInterval = setInterval(createTimer, 1000);
 
-function updateGhosts() {
+export function updateGhosts() {
     const pacman = document.getElementById('pacman');
     if (!pacman) return;
 
