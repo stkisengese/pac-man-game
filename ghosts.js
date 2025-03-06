@@ -515,6 +515,7 @@ export function ghostLoop() {
     updateGhosts();
     if (gameover == true) {
         cancelAnimationFrame(ghostAnimationId);
+        document.getElementById('pauseBtn').style.display = 'none'
         return;
     }
     ghostAnimationId = requestAnimationFrame(ghostLoop);
