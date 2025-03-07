@@ -194,19 +194,23 @@ body {
     height: 100px;
     display: flex;
     justify-content: center;
+    margin-bottom: 40px;
 }
-.menu-button{
+.menu-button {
+    
     align-self: normal;
     background-color: rgb(252, 199, 63);
     border: calc();
     border-radius: 8px;
     border-color: red;
-    height: 30%;
+    height: 25%;
     width: 15%;
     border-bottom-right-radius: 2px;
     border-top: 10px;
     border-left: 6px;
-    
+    margin: 15px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effects */
 }
 .pause-button {
     position: fixed;
@@ -220,15 +224,28 @@ body {
     font-family: 'Press Start 2P', sans-serif;
     
 }
-.fruit {
-    width: 18px;
-    height: 18px;
-    background-size: cover;
-    position: absolute;
-}
 .start-button{
     background-color: rgb(255, 60, 0);
 }
-.fruit-image{
-    height: 50px;
+.menu-button:hover {
+    transform: scale(1.1); /* Slightly increase the size */
+    box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.7); /* Enhance the shadow on hover */
+}
+
+/* Add a keyframe animation for a continuous pulsing effect */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Apply the animation to the button */
+.menu-button.pulse {
+    animation: pulse 1.5s infinite; /* Apply the pulse animation */
 }
