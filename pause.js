@@ -1,3 +1,6 @@
+import {gameover} from './ghosts.js'
+import { score } from './score.js';
+
 // Create a pause state variable to track game status
 let isPaused = false;
 
@@ -73,6 +76,45 @@ function setupPauseMenu() {
     });
 }
 
+export const timeElement = document.getElementById('time');
+let timerStart = false;
+export let timeLeft = 600; // 10 minutes in seconds
+
+export function createTimer() {
+    if (timeLeft <= 0 || gameover == true ) {
+        clearInterval(timerInterval);
+        return;
+    }
+    if (score > 0) {
+        timerStart = true;
+    }
+    if (timerStart) {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+
+        // Format time as MM:SS
+        const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        timeElement.textContent = formattedTime;
+    }
+    
+}
+let timerInterval = setInterval(createTimer, 1000);
+
+
+
+export function resumeGame(){
+        // Hide pause menu
+        pauseMenu.style.display = 'none';
+        // Resume game loops
+        resumeGameLoops();
+        // Resume audio
+        resumeAudio()
+        
+        //resume the timer
+        timerInterval=setInterval(createTimer, 1000)
+        }
+
 // Toggle pause state
 function togglePause() {
     isPaused = !isPaused;
@@ -85,14 +127,11 @@ function togglePause() {
         cancelAnimationFrame(ghostAnimationId);
         cancelAnimationFrame(pacmanAnimationId);
         // Pause any audio that might be playing
-        pauseAudio();
+         pauseAudio();
+       //pause the timer
+        clearInterval(timerInterval)
     } else {
-        // Hide pause menu
-        pauseMenu.style.display = 'none';
-        // Resume game loops
-        resumeGameLoops();
-        // Resume audio
-        resumeAudio();
+        resumeGame();
     }
 }
 

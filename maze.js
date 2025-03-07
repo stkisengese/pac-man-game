@@ -1,5 +1,5 @@
 import {gameover} from "./ghosts.js"
-
+import { isGamePaused } from './pause.js';
 
 window.onload = function () {
     renderRandomDots();
@@ -377,7 +377,7 @@ document.addEventListener("keydown", (event) => {
             break;
     }
 });
-import { isGamePaused } from './pause.js';
+
 
 
 // document.addEventListener("DOMContentLoaded", () => {

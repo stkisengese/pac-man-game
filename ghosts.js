@@ -1,6 +1,6 @@
 import { mazeGrid, resetPacmanPosition, changePacmanImage } from './maze.js';
 import { score, updateScore } from './score.js';
-// import { isGamePaused, initPauseSystem } from './pauseMenu.js';
+import {timeLeft } from './pause.js';
 
 const ghosts = {};
 
@@ -9,7 +9,7 @@ export let lives = 2; //there are three lives. the last life is 0(for pacman lif
 let isImmune = false;
 let immunityTime = 2000; // 2 seconds immunity after collision
 export let gameover = false
-let timeLeft = 600; // 10 minutes in seconds
+
 
 
     // Refined Ghost Configuration with SVG characters
@@ -514,39 +514,16 @@ let timeLeft = 600; // 10 minutes in seconds
 // Game loop for ghost movement
 export function ghostLoop() {
     updateGhosts();
-    if (gameover == true) {
-        cancelAnimationFrame(ghostAnimationId);
-        document.getElementById('pauseBtn').style.display = 'none'
+    if (gameover == true || timeLeft == 0) {
+        // if timeleft causes gameover,set gameover to true too
+        // to stop game loop in maze.js
+        timeLeft==0?gameover=true:null;
+        handleGameOver();
         return;
     }
     ghostAnimationId = requestAnimationFrame(ghostLoop);
     
 }
-
-const timeElement = document.getElementById('time');
-let timerStart = false;
-
-function createTimer() {
-    if (timeLeft <= 0 || gameover == true) {
-        clearInterval(timerInterval);
-        // Handle game over
-        // WORK IN PROGRESS
-        return;
-    }
-    if (score > 0) {
-        timerStart = true;
-    }
-    if (timerStart) {
-        timeLeft--;
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-
-        // Format time as MM:SS
-        const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        timeElement.textContent = formattedTime;
-    }
-}
-const timerInterval = setInterval(createTimer, 1000);
 
 export function updateGhosts() {
     const pacman = document.getElementById('pacman');
@@ -571,6 +548,18 @@ export function updateGhosts() {
         }
     });
 }
+const overlay = document.getElementById('fade-overlay');
+
+// Game over handler
+export function handleGameOver() {
+    cancelAnimationFrame(ghostAnimationId);
+    document.getElementById('pauseBtn').style.display = 'none'
+    const gameOverAlert = document.querySelector('.game-over');
+    gameOverAlert.style.display = 'block';
+    overlay.style.opacity = '1';
+    overlay.style.backgroundColor = '';
+    console.log('Game Over!');
+}
 
 function handleCollision(ghost) {
     if (isImmune) return;
@@ -593,7 +582,7 @@ function handleCollision(ghost) {
     Object.values(ghosts).forEach(ghost => ghost.reset());
 
     // Apply fade-in effect to maze
-    const overlay = document.getElementById('fade-overlay');
+    //  overlay = document.getElementById('fade-overlay');
     if (overlay && lives > -1) {
         overlay.style.opacity = '1';
         overlay.style.backgroundColor = 'black';
@@ -608,13 +597,9 @@ function handleCollision(ghost) {
         pacman.style.display = 'block';
     }, 900);
 
-    if (lives === -1 || timeLeft === 0) { // Lives are over
-        const gameOverAlert = document.querySelector('.game-over');
-        gameOverAlert.style.display = 'block';
-        overlay.style.opacity = '1';
-        overlay.style.backgroundColor = '';
-        console.log('Game Over!');
-        gameover = true;
+    if (lives === -1  ) { // Lives are over
+        gameover=true;
+        handleGameOver();
         return;
     }
 
