@@ -130,6 +130,7 @@ class Ghost {
         this.scatterTarget = this.getScatterTarget();
         this.x = config.startPos.x * CELL_SIZE + GHOST_POSITION_OFFSET.x;
         this.y = config.startPos.y * CELL_SIZE + GHOST_POSITION_OFFSET.y;
+        this.isInGhostHouse = mazeGrid[config.startPos.y][config.startPos.x] === 3;
         this.currentGridX = config.startPos.x;
         this.currentGridY = config.startPos.y;
         this.direction = this.getRandomDirection();
@@ -192,14 +193,19 @@ class Ghost {
             return false;
         }
 
-        // // Allow movement on paths, ghost house entrance, ghost house
-        // return [1, 2, 3, 4].includes(mazeGrid[gridY][gridX]);
-
-        // Allow movement on paths (1), ghost house entrance (2) and ghost house (3)
-        return mazeGrid[gridY][gridX] === 1 ||
-            mazeGrid[gridY][gridX] === 2 ||
-            mazeGrid[gridY][gridX] === 3 ||
-            mazeGrid[gridY][gridX] === 4;
+        const cellType = mazeGrid[gridY][gridX];
+        if (this.isInGhostHouse) {
+            // When in ghost house, can move on ghost house tiles (3) and ghost house door (2)
+            return cellType === 3 || cellType === 2;
+        } else {
+            if (cellType === 2) {
+                // Only allow moving through door when exiting (moving up from ghost house)
+                return this.currentGridY > gridY && mazeGrid[this.currentGridY][this.currentGridX] === 2;
+            }
+            
+            // Regular path movement
+            return cellType === 1 || cellType === 4;
+        }
     }
 
     handleTunnel(gridX, gridY) {
@@ -452,6 +458,11 @@ class Ghost {
             this.direction = this.nextDirection;
         }
 
+            // Check if ghost is leaving ghost house
+        if (this.isInGhostHouse && mazeGrid[this.currentGridY][this.currentGridX] !== 3) {
+            this.isInGhostHouse = false;
+        }
+
         const nextPos = this.getNextPosition(this.currentGridX, this.currentGridY, this.direction);
         if (this.isValidMove(nextPos.x, nextPos.y)) {
             this.isMoving = true;
@@ -492,6 +503,7 @@ class Ghost {
         this.direction = this.getRandomDirection();
         this.nextDirection = this.direction;
         this.isMoving = false;
+        this.isInGhostHouse = true;
         this.isVulnerable = false;
         this.updateGhostAppearance(this.config.color);
         this.speed = GHOST_SPEED;
