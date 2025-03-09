@@ -381,6 +381,13 @@ export let gameover = false
         }
 
         makeVulnerable() {
+             // Clear any active timeouts and intervals
+             if (this.timeouts) {
+                clearTimeout(this.timeouts.flashing);
+                clearTimeout(this.timeouts.vulnerability);
+            }
+            this.stopFlashing();
+
             this.mode = "frightened";
             this.isVulnerable = true;
             this.updateGhostAppearance(this.config.frightenedColor);
