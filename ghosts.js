@@ -391,7 +391,7 @@ export let gameover = false
             this.mode = "frightened";
             this.isVulnerable = true;
             this.updateGhostAppearance(this.config.frightenedColor);
-            this.speed = GHOST_SPEED * 0.5; // Slower when vulnerable
+            this.speed = GHOST_SPEED * 0.7; // Slower when vulnerable
 
             // Start flashing near the end of vulnerability period
             const flashingTimeout = setTimeout(() => {
