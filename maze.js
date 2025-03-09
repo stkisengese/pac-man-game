@@ -1,4 +1,4 @@
-import {gameover} from "./ghosts.js"
+import { gameover } from "./ghosts.js"
 import { isGamePaused } from './pause.js';
 
 window.onload = function () {
@@ -167,7 +167,7 @@ export function collectDot(dotElement) {
             // document.dispatchEvent(new CustomEvent('allDotsCollected'));
             resetDots();
         }
-        
+
 
         dotElement.remove();
         return points;
@@ -180,7 +180,16 @@ function areAllDotsCollected() {
 }
 
 function resetDots() {
-    return renderRandomDots();
+    // First reset the dots
+    renderRandomDots();
+
+    // Reset Pacman position
+    resetPacmanPosition();
+
+    // Dispatch an event to reset ghosts
+    document.dispatchEvent(new CustomEvent('levelCompleted'));
+
+    return true;
 }
 
 // CSS 
@@ -219,7 +228,7 @@ let y = currentGridY * CELL_SIZE + POSITION_OFFSET.y;
 //console.log(x,y)
 
 
-let speed = 3;
+let speed = 2;
 let direction = "right";
 let nextDirection = "right";
 let isMoving = false;
@@ -407,67 +416,67 @@ export function gameLoop() {
 
 function initMainMenu() {
     console.log("Initializing main menu...");
-    
+
     const mainMenu = document.getElementById('main-menu');
     const gameContainer = document.getElementById('game-container');
     const startButton = document.getElementById('start-button');
-    
+
     if (!mainMenu) {
         console.error("Main menu element not found!");
         return;
     }
-    
+
     if (!gameContainer) {
         console.error("Game container element not found!");
         return;
     }
-    
+
     if (!startButton) {
         console.error("Start button element not found!");
         return;
     }
-    
+
     console.log("All elements found, setting up...");
-    
+
     // Hide game container initially
     gameContainer.style.display = 'none';
-    
+
     // Add click event to start button with debugging
-    startButton.addEventListener('click', function() {
+    startButton.addEventListener('click', function () {
         console.log("Start button clicked!");
         startGame();
     });
-    
+
     // Also listen for Enter key
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && mainMenu.style.display !== 'none') {
             console.log("Enter key pressed!");
             startGame();
         }
     });
-    
+
     // Function to start the game
     function startGame() {
         console.log("Starting game...");
-        
+
         // Hide the main menu
         mainMenu.style.display = 'none';
-        
+
         // Show the game container
         gameContainer.style.display = 'block';
         console.log("Display properties updated");
-        
-         // Initialize Pac-Man
-         initializePacman();
+
+        // Initialize Pac-Man
+        initializePacman();
         // Start the game loops - using try/catch to handle potential errors
-        
+
         try {
             startGameLoops();
             console.log("Game loops started");
         } catch (error) {
             console.error("Error starting game loops:", error);
         }
-        
+
         // Reset game state if needed
         try {
             resetGameState();
@@ -476,7 +485,7 @@ function initMainMenu() {
             console.error("Error resetting game state:", error);
         }
     }
-    
+
     // Function to start game loops - simplified for troubleshooting
     function startGameLoops() {
         // Instead of importing functions that might cause issues, dispatch an event
@@ -486,7 +495,7 @@ function initMainMenu() {
         document.dispatchEvent(gameStartEvent);
         console.log("Game start event dispatched");
     }
-    
+
     // Function to reset game state - simplified
     function resetGameState() {
         // Reset score
@@ -494,20 +503,20 @@ function initMainMenu() {
         if (scoreElement) {
             scoreElement.textContent = '0';
         }
-        
+
         // Hide game over screen if visible
-       
+
         // Dispatch a reset event for other components to listen for
         const resetEvent = new CustomEvent('gameReset');
         document.dispatchEvent(resetEvent);
         console.log("Game reset event dispatched");
     }
-    
+
     console.log("Main menu initialization complete");
 }
 
 // Initialize the main menu when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log("DOM loaded, initializing main menu");
     initMainMenu();
 });

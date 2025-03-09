@@ -1,4 +1,4 @@
-import {gameover} from './ghosts.js'
+import { gameover } from './ghosts.js'
 import { score } from './score.js';
 
 // Create a pause state variable to track game status
@@ -81,7 +81,7 @@ let timerStart = false;
 export let timeLeft = 600; // 10 minutes in seconds
 
 export function createTimer() {
-    if (timeLeft <= 0 || gameover == true ) {
+    if (timeLeft <= 0 || gameover == true) {
         clearInterval(timerInterval);
         return;
     }
@@ -97,23 +97,23 @@ export function createTimer() {
         const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         timeElement.textContent = formattedTime;
     }
-    
+
 }
 let timerInterval = setInterval(createTimer, 1000);
 
 
 
-export function resumeGame(){
-        // Hide pause menu
-        pauseMenu.style.display = 'none';
-        // Resume game loops
-        resumeGameLoops();
-        // Resume audio
-        resumeAudio()
-        
-        //resume the timer
-        timerInterval=setInterval(createTimer, 1000)
-        }
+export function resumeGame() {
+    // Hide pause menu
+    pauseMenu.style.display = 'none';
+    // Resume game loops
+    resumeGameLoops();
+    // Resume audio
+    resumeAudio()
+
+    //resume the timer
+    timerInterval = setInterval(createTimer, 1000)
+}
 
 // Toggle pause state
 function togglePause() {
@@ -127,8 +127,8 @@ function togglePause() {
         cancelAnimationFrame(ghostAnimationId);
         cancelAnimationFrame(pacmanAnimationId);
         // Pause any audio that might be playing
-         pauseAudio();
-       //pause the timer
+        pauseAudio();
+        //pause the timer
         clearInterval(timerInterval)
     } else {
         resumeGame();
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
     PauseDiv.style.width = '100%';
     PauseDiv.style.zIndex = '10';
     document.body.appendChild(PauseDiv)
-    
+
     setupPauseMenu();
     // Also add a visible pause button for mobile compatibility
     // const pauseButtonHTML = `<button id="pauseBtn" style="position: absolute; top: 10px; right: 10px; z-index: 999; 

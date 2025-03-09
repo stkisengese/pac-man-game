@@ -3,19 +3,25 @@
     font-style: normal;
     font-weight: normal;
     src: local('Press Start 2P Regular'), url('./Fonts/PressStart2P-Regular.woff') format('woff');
-    }
+}
+
 /* Center the game UI */
 body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Full height of viewport */
-    margin: 0; /* Remove default margin */
-    background-color: black; 
-    color: yellow; /* text color */
+    height: 100vh;
+    /* Full height of viewport */
+    margin: 0;
+    /* Remove default margin */
+    background-color: black;
+    color: yellow;
+    /* text color */
     font-family: 'Press Start 2P Regular', sans-serif;
-    text-transform: uppercase; /* Classic arcade look */
-    overflow: hidden; /* Prevent scrolling */
+    text-transform: uppercase;
+    /* Classic arcade look */
+    overflow: hidden;
+    /* Prevent scrolling */
 }
 
 /* Style the text */
@@ -31,11 +37,15 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 600px; /* Adjust to fit the game */
-    height: 700px; /* Adjust as needed */
-    background-color: #000; /* Optional: Game background */
+    width: 600px;
+    /* Adjust to fit the game */
+    height: 700px;
+    /* Adjust as needed */
+    background-color: #000;
+    /* Optional: Game background */
     padding: 10px;
-    border-radius: 10px; /* Optional: Rounded corners */
+    border-radius: 10px;
+    /* Optional: Rounded corners */
     text-align: center;
 }
 
@@ -46,7 +56,8 @@ body {
     justify-content: center;
     align-items: center;
 }
-.maze-img{
+
+.maze-img {
     width: 504px;
     height: 558px;
 }
@@ -66,28 +77,35 @@ body {
     /* border-radius: 50%; */
 }
 
-.column_1,.column_2{ /*for the scores */
+.column_1,
+.column_2 {
+    /*for the scores */
     margin: 0.625rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
+
 .column_1 {
     margin-top: 2rem;
 }
-.column_3{ /*for the pacman lives */
+
+.column_3 {
+    /*for the pacman lives */
     margin: 0.625rem;
     display: flex;
- } img{      
-   margin-right : 0.3rem,; 
-   margin-left: 0.3rem;
-   height: 20px;
-   width:20px;
+}
+
+img {
+    margin-right: 0.3rem, ;
+    margin-left: 0.3rem;
+    height: 20px;
+    width: 20px;
 }
 
 /* overlay for fade in animation */
 #fade-overlay {
-    color:red;
+    color: red;
     position: absolute;
     top: 0;
     left: 0;
@@ -95,10 +113,13 @@ body {
     height: 100%;
     /* background-color:black; */
     opacity: 0;
-    pointer-events: none; /* Ensure it doesn't block interactions */
+    pointer-events: none;
+    /* Ensure it doesn't block interactions */
     transition: opacity 1s ease-in-out;
-    z-index: 1000; /* Ensure it covers the game UI */
+    z-index: 1000;
+    /* Ensure it covers the game UI */
 }
+
 .game-over {
     margin-top: 30rem;
     font-size: 20px;
@@ -109,22 +130,38 @@ body {
     display: none;
     animation: gameOverFlash 0.8s 3;
 }
-/* Game over animation */
-@keyframes gameOverFlash { 
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
 
-  .power-pellet {
+/* Game over animation */
+@keyframes gameOverFlash {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+.power-pellet {
     animation: powerPelletFlash 0.3s infinite;
-    
-  }
-  
+
+}
+
 /* Power Pellet Animation */
 @keyframes powerPelletFlash {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
 /* Pause Menu Styles */
 #pause-menu {
     position: absolute;
@@ -158,7 +195,7 @@ body {
 .pause-content button {
     background-color: #0066ff;
     color: rgb(255, 255, 255);
-    border:calc();
+    border: calc();
     padding: 10px 20px;
     margin: 10px;
     font-size: 18px;
@@ -175,7 +212,8 @@ body {
 .pause-content button:active {
     background-color: #0033cc;
 }
-.main-menu{
+
+.main-menu {
     background-color: yellow;
     width: 100%;
     height: 100%;
@@ -184,18 +222,22 @@ body {
     /* justify-content: space-between; */
     justify-content: center;
     align-items: center;
-    
+
 }
+
 .menu-content {
-    text-align: center; /* Center the text inside the button */
+    text-align: center;
+    /* Center the text inside the button */
 }
-.pacman-logo{
+
+.pacman-logo {
     width: 500px;
     height: 100px;
     display: flex;
     justify-content: center;
     margin-bottom: 40px;
 }
+
 .menu-button {
     align-self: normal;
     background-color: rgb(252, 199, 63);
@@ -208,26 +250,32 @@ body {
     border-top: 10px;
     border-left: 6px;
     margin: 15px;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5); /* Add this line */
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+    /* Add this line */
 }
+
 .pause-button {
     position: fixed;
     top: 10px;
     right: 10px;
-    background-color:black;
+    background-color: black;
     /* color: black; */
     border: none;
     padding: 10px 20px;
     cursor: pointer;
     font-family: 'Press Start 2P', sans-serif;
-    
+
 }
-.start-button{
+
+.start-button {
     background-color: rgb(255, 60, 0);
 }
+
 .menu-button:hover {
-    transform: scale(1.1); /* Slightly increase the size */
-    box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.7); /* Enhance the shadow on hover */
+    transform: scale(1.1);
+    /* Slightly increase the size */
+    box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.7);
+    /* Enhance the shadow on hover */
 }
 
 /* Add a keyframe animation for a continuous pulsing effect */
@@ -235,9 +283,11 @@ body {
     0% {
         transform: scale(1);
     }
+
     50% {
         transform: scale(1.1);
     }
+
     100% {
         transform: scale(1);
     }
@@ -245,5 +295,6 @@ body {
 
 /* Apply the animation to the button */
 .menu-button.pulse {
-    animation: pulse 1.5s infinite; /* Apply the pulse animation */
+    animation: pulse 1.5s infinite;
+    /* Apply the pulse animation */
 }
