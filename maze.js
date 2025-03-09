@@ -219,7 +219,7 @@ let y = currentGridY * CELL_SIZE + POSITION_OFFSET.y;
 //console.log(x,y)
 
 
-let speed = 3;
+let speed = 2;
 let direction = "right";
 let nextDirection = "right";
 let isMoving = false;
