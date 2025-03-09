@@ -518,6 +518,11 @@ startButton.addEventListener('click', () => {
     }
 });
 
+// Reset all ghosts to their starting positions on level completion
+document.addEventListener('levelCompleted', () => {
+    Object.values(ghosts).forEach(ghost => ghost.reset());
+});
+
 // Game loop for ghost movement
 export function ghostLoop() {
     updateGhosts();
