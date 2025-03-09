@@ -180,7 +180,16 @@ function areAllDotsCollected() {
 }
 
 function resetDots() {
-    return renderRandomDots();
+    // First reset the dots
+    renderRandomDots();
+
+    // Reset Pacman position
+    resetPacmanPosition();
+
+    // Dispatch an event to reset ghosts
+    document.dispatchEvent(new CustomEvent('levelCompleted'));
+
+    return true;
 }
 
 // CSS 
