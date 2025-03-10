@@ -1,6 +1,6 @@
-import { mazeGrid, resetPacmanPosition, changePacmanImage } from './maze.js';
+import { mazeGrid, resetPacmanPosition, changePacmanImage, gameLoop } from './maze.js';
 import { score, updateScore } from './score.js';
-import { timeLeft } from './pause.js';
+import { timeLeft,resumeGame } from './pause.js';
 
 const ghosts = {};
 
@@ -616,10 +616,14 @@ function handleCollision(ghost) {
     }
 
     // Reset Pac-Man position
-    setTimeout(() => {
         resetPacmanPosition();
+        // pause game for fade-overlay animation
+        cancelAnimationFrame(pacmanAnimationId);
         pacman.style.display = 'block';
-    }, 900);
+        // wait for fade overlay animation before resuming game
+       setTimeout(() => { 
+        gameLoop()
+    }, 950);
 
     if (lives === -1) { // Lives are over
         gameover = true;
