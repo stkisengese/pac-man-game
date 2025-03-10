@@ -304,3 +304,7 @@ img {
     animation: pulse 1.5s infinite;
     /* Apply the pulse animation */
 }
+.ghost{
+    width: 30px;
+    height: 30px;
+}

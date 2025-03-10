@@ -19,7 +19,7 @@ const GHOST_CONFIGS = {
         color: 'red',
         frightenedColor: 'blue',
         character: (color) => `
-                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="ghost">
                 <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}">
                 <animate attributeName="d"
                 values="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19;
@@ -42,7 +42,7 @@ const GHOST_CONFIGS = {
         color: 'pink',
         frightenedColor: 'blue',
         character: (color) => `
-                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="ghost">
                 <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}">
                 <animate attributeName="d"
                 values="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19;
@@ -65,7 +65,7 @@ const GHOST_CONFIGS = {
         color: 'cyan',
         frightenedColor: 'blue',
         character: (color) => `
-                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="ghost">
                 <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}">
                 <animate attributeName="d"
                 values="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19;
@@ -88,7 +88,7 @@ const GHOST_CONFIGS = {
         color: 'orange',
         frightenedColor: 'blue',
         character: (color) => `
-                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="ghost">
                 <path class="ghost-body" d="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19" fill="${color}">
                 <animate attributeName="d"
                 values="M1,19 L1,8 C1,3.5 5,0 10,0 C15,0 19,3.5 19,8 L19,19 L15,15 L13,19 L10,15 L7,19 L5,15 L1,19;
