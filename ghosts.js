@@ -113,7 +113,7 @@ const GHOST_POSITION_OFFSET = {
     x: 4,  // Horizontal offset to center ghost in path
     y: -7  // Vertical offset to center ghost in path
 };
-const GHOST_SPEED = 1;
+const GHOST_SPEED = 1.5;
 const GRID_SNAP_THRESHOLD = 1;
 
 const PACMAN_START_POS = {
