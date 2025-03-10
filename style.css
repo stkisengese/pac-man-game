@@ -64,6 +64,7 @@ body {
 
 
 #dot-container {
+    will-change: transform;
     position: absolute;
     top: 0;
     left: 0;
@@ -105,6 +106,7 @@ img {
 
 /* overlay for fade in animation */
 #fade-overlay {
+    will-change: transform;
     color: red;
     position: absolute;
     top: 0;
@@ -121,6 +123,7 @@ img {
 }
 
 .game-over {
+    will-change: transform;
     margin-top: 30rem;
     font-size: 20px;
     font-weight: bold;
@@ -145,6 +148,7 @@ img {
 }
 
 .power-pellet {
+    will-change: transform;
     animation: powerPelletFlash 0.3s infinite;
 
 }
@@ -164,6 +168,7 @@ img {
 
 /* Pause Menu Styles */
 #pause-menu {
+    will-change: transform;
     position: absolute;
     top: 0;
     left: 0;
@@ -295,6 +300,7 @@ img {
 
 /* Apply the animation to the button */
 .menu-button.pulse {
+    will-change: transform;
     animation: pulse 1.5s infinite;
     /* Apply the pulse animation */
 }
