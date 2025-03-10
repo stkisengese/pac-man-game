@@ -19,7 +19,7 @@ function createPauseMenu() {
       <button id="resumeButton" style="background-color: yellow; color: black; border: none; padding: 10px 20px; 
               margin: 10px; cursor: pointer; font-family: 'Press Start 2P Regular', sans-serif, cursive;">Resume</button>
       <button id="quitButton" style="background-color: yellow; color: black; border: none; padding: 10px 20px; 
-              margin: 10px; cursor: pointer; font-family: 'Press Start 2P Regular', sans-serif, cursive;">Quit</button>
+              margin: 10px; cursor: pointer; font-family: 'Press Start 2P Regular', sans-serif, cursive;">Restart</button>
     </div>
     `;
 
