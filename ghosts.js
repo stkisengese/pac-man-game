@@ -38,7 +38,7 @@ const GHOST_CONFIGS = {
                 </svg>`
     },
     pinky: {
-        startPos: { x: 12, y: 14 },
+        startPos: { x: 14, y: 14 },
         color: 'pink',
         frightenedColor: 'blue',
         character: (color) => `
@@ -61,7 +61,7 @@ const GHOST_CONFIGS = {
                 </svg>`
     },
     inky: {
-        startPos: { x: 14, y: 14 },
+        startPos: { x: 12, y: 14 },
         color: 'cyan',
         frightenedColor: 'blue',
         character: (color) => `
@@ -202,7 +202,7 @@ class Ghost {
                 // Only allow moving through door when exiting (moving up from ghost house)
                 return this.currentGridY > gridY && mazeGrid[this.currentGridY][this.currentGridX] === 2;
             }
-            
+
             // Regular path movement
             return cellType === 1 || cellType === 4;
         }
@@ -458,7 +458,7 @@ class Ghost {
             this.direction = this.nextDirection;
         }
 
-            // Check if ghost is leaving ghost house
+        // Check if ghost is leaving ghost house
         if (this.isInGhostHouse && mazeGrid[this.currentGridY][this.currentGridX] !== 3) {
             this.isInGhostHouse = false;
         }
