@@ -5,6 +5,10 @@
     src: local('Press Start 2P Regular'), url('./Fonts/PressStart2P-Regular.woff') format('woff');
 }
 
+.pacman, .ghost{
+    will-change: transform;
+}
+
 /* Center the game UI */
 body {
     display: flex;
@@ -131,7 +135,7 @@ img {
     letter-spacing: 5px;
     color: red;
     display: none;
-    animation: gameOverFlash 0.8s 3;
+    /* animation: gameOverFlash 0.8s 3; */
 }
 
 /* Game over animation */
@@ -260,6 +264,7 @@ img {
 }
 
 .pause-button {
+    will-change: transform;
     position: fixed;
     top: 10px;
     right: 10px;
