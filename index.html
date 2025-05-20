@@ -7,6 +7,7 @@
     <title>Document</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="story.css">
 </head>
 
 <body>
@@ -22,7 +23,8 @@
                 <h1 class="game-over">Game Over</h1>
             </div>
             <div>
-                <button id="pauseBtn" class="pause-button"><img class="pause-image"src="assets/pause-xxl.png" alt="⏸"></button>
+                <button id="pauseBtn" class="pause-button"><img class="pause-image" src="assets/pause-xxl.png"
+                        alt="⏸"></button>
 
             </div>
             <div id="row-top" class="row-top">
@@ -56,11 +58,57 @@
             </div>
         </div>
     </div>
-    <script src="gamestate.js" type="module"></script>
+
+    <!-- Story Overlays -->
+    <div id="story-intro" class="story-overlay hidden">
+        <div class="story-content">
+            <h2>THE MAZE MYSTERY</h2>
+            <p>Welcome to Pac-Land, a once peaceful world now under siege by mysterious ghosts.</p>
+            <p>The ghosts have stolen the sacred Power Crystal that maintains balance in our world.</p>
+            <p>As Pac-Man, you must collect all the power pellets to charge your abilities and recover the stolen
+                crystal!</p>
+            <button id="story-intro-btn" class="story-button">BEGIN QUEST</button>
+        </div>
+    </div>
+
+    <div id="story-development" class="story-overlay hidden">
+        <div class="story-content">
+            <h2>THE POWER AWAKENS</h2>
+            <p>You've collected enough pellets to sense the crystal's location!</p>
+            <p>The ghosts have noticed your progress and will become more aggressive.</p>
+            <p>Continue your quest and collect all remaining pellets to unlock the final confrontation!</p>
+            <button id="story-development-btn" class="story-button">CONTINUE</button>
+        </div>
+    </div>
+
+    <div id="story-victory" class="story-overlay hidden">
+        <div class="story-content">
+            <h2>VICTORY!</h2>
+            <div class="crystal-container">
+                <div class="crystal"></div>
+            </div>
+            <p>Congratulations! You've collected all pellets and restored peace to Pac-Land!</p>
+            <p>The ghosts retreat as the Power Crystal returns to its rightful place.</p>
+            <p>Pac-Land citizens will remember your heroism for generations to come!</p>
+            <button id="story-victory-btn" class="story-button">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <div id="story-defeat" class="story-overlay hidden">
+        <div class="story-content">
+            <h2>DEFEAT...</h2>
+            <p>The ghosts have overwhelmed you before your mission was complete.</p>
+            <p>Darkness spreads across Pac-Land as the Power Crystal remains in ghost control.</p>
+            <p>But hope remains - you can return and try again to save our world!</p>
+            <button id="story-defeat-btn" class="story-button">TRY AGAIN</button>
+        </div>
+    </div>
+
     <script src="score.js" type="module"></script>
     <script src="ghosts.js" type="module"></script>
     <script src="pause.js" type="module"></script>
     <script src="maze.js" type="module"></script>
+    <script src="story.js" type="module"></script>
 </body>
 
 </html>
