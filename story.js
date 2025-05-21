@@ -82,17 +82,16 @@ export function initStoryMode() {
   // Listen for game over event to show conclusion
   document.addEventListener("gameOver", (event) => {
     if (!STORY_CONFIG.conclusionShown) {
-      // Short delay to ensure game over screen is shown
-      setTimeout(() => {
-        if (event.detail && event.detail.victory) {
-          showStoryOverlay(storyVictory);
-           pauseGameForStory();
-        } else {
+      if (event.detail && event.detail.victory) {
+        showStoryOverlay(storyVictory);
+        pauseGameForStory();
+      } else {
+        // Short delay to display gameover screen
+        setTimeout(() => {
           showStoryOverlay(storyDefeat);
-           pauseGameForStory();
-        }
-        STORY_CONFIG.conclusionShown = true;
-      }, 1000);
+        }, 1000);
+      }
+      STORY_CONFIG.conclusionShown = true;
     }
   });
 
@@ -145,7 +144,7 @@ function resumeGameAfterStory() {
   if (typeof gameLoop === 'function') {
     pacmanAnimationId = requestAnimationFrame(gameLoop);
   }
- 
+
   // Resume ghost game loop from ghost.js
   if (typeof ghostLoop === 'function') {
     ghostAnimationId = requestAnimationFrame(ghostLoop);
