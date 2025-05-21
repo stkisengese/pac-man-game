@@ -189,6 +189,13 @@ function resetDots() {
     // Dispatch an event to reset ghosts
     document.dispatchEvent(new CustomEvent('levelCompleted'));
 
+    // Trigger victory event
+    const victoryEvent = new CustomEvent("gameOver", {
+        detail: { victory: true },
+    });
+    document.dispatchEvent(victoryEvent);
+
+
     return true;
 }
 
