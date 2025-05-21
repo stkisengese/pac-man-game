@@ -1,5 +1,5 @@
 // Story mode management for Pac-Man game
-import { isGamePaused, resumeGame } from "./pause.js";
+import { isGamePaused } from "./pause.js";
 import { score } from "./score.js";
 import { gameover, lives, ghostLoop } from "./ghosts.js";
 import { gameLoop } from "./maze.js";
@@ -28,6 +28,7 @@ export function initStoryMode() {
   const developmentButton = document.getElementById("story-development-btn");
   const victoryButton = document.getElementById("story-victory-btn");
   const defeatButton = document.getElementById("story-defeat-btn");
+  const continueButton = document.getElementById("story-continue-btn");
 
   // Add event listeners to story buttons
   introButton.addEventListener("click", () => {
@@ -45,6 +46,12 @@ export function initStoryMode() {
   victoryButton.addEventListener("click", () => {
     hideStoryOverlay(storyVictory);
     resetGame();
+  });
+
+  continueButton.addEventListener("click", () => {
+    hideStoryOverlay(storyVictory);
+    STORY_CONFIG.conclusionShown = false;
+    resumeGameAfterStory();
   });
 
   defeatButton.addEventListener("click", () => {
@@ -79,8 +86,10 @@ export function initStoryMode() {
       setTimeout(() => {
         if (event.detail && event.detail.victory) {
           showStoryOverlay(storyVictory);
+           pauseGameForStory();
         } else {
           showStoryOverlay(storyDefeat);
+           pauseGameForStory();
         }
         STORY_CONFIG.conclusionShown = true;
       }, 1000);
