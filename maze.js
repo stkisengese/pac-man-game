@@ -163,11 +163,20 @@ export function collectDot(dotElement) {
             // You can trigger ghost vulnerability here
             document.dispatchEvent(new CustomEvent('powerPelletCollected'));
         }
+
+        // Dispatch a dotCollected event to notify other modules (storyMode)
+        document.dispatchEvent(new CustomEvent('dotCollected', {
+            detail: {
+                totalDots: window.gameState.totalDots,
+                remaining: window.gameState.dotsRemaining,
+                collected: window.gameState.totalDots - window.gameState.dotsRemaining,
+                points: points
+            }
+        }));
+
         if (window.gameState.dotsRemaining === 0) {
-            // document.dispatchEvent(new CustomEvent('allDotsCollected'));
             resetDots();
         }
-
 
         dotElement.remove();
         return points;
@@ -175,16 +184,9 @@ export function collectDot(dotElement) {
     return 0;
 }
 
-function areAllDotsCollected() {
-    return window.gameState.dotsRemaining === 0;
-}
-
 function resetDots() {
-    // First reset the dots
-    renderRandomDots();
-
-    // Reset Pacman position
-    resetPacmanPosition();
+    renderRandomDots();  // First reset the dots
+    resetPacmanPosition();  // Reset Pacman position
 
     // Dispatch an event to reset ghosts
     document.dispatchEvent(new CustomEvent('levelCompleted'));
@@ -194,7 +196,6 @@ function resetDots() {
         detail: { victory: true },
     });
     document.dispatchEvent(victoryEvent);
-
 
     return true;
 }
@@ -394,14 +395,6 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
-
-
-// document.addEventListener("DOMContentLoaded", () => {
-
-//     initializePacman();
-//     gameLoop();
-// });
-
 export function gameLoop() {
     if (!isGamePaused()) {
         updatePacman()
@@ -413,13 +406,6 @@ export function gameLoop() {
     // updatePacman();
     pacmanAnimationId = requestAnimationFrame(gameLoop);
 }
-
-// document.addEventListener('gameRestart', () => {
-//     // Reset game state
-//     resetPacmanPosition();
-//     // Reset any other game state as needed
-// });
-// import { isGamePaused, initPauseSystem } from './pauseMenu.js';
 
 function initMainMenu() {
     console.log("Initializing main menu...");
@@ -468,14 +454,10 @@ function initMainMenu() {
 
         // Hide the main menu
         mainMenu.style.display = 'none';
-
-        // Show the game container
         gameContainer.style.display = 'block';
-        console.log("Display properties updated");
 
         // Initialize Pac-Man
         initializePacman();
-        // Start the game loops - using try/catch to handle potential errors
 
         try {
             startGameLoops();
@@ -493,10 +475,9 @@ function initMainMenu() {
         }
     }
 
-    // Function to start game loops - simplified for troublmazeGrideshooting
+    // Function to start game loops
     function startGameLoops() {
-        // Instead of importing functions that might cause issues, dispatch an event
-        // that your maze.js and ghosts.js can listen for
+        // Dispatch an event that maze.js and ghosts.js can listen for
         gameLoop();
         const gameStartEvent = new CustomEvent('gameStart');
         document.dispatchEvent(gameStartEvent);
@@ -505,13 +486,10 @@ function initMainMenu() {
 
     // Function to reset game state - simplified
     function resetGameState() {
-        // Reset score
         const scoreElement = document.getElementById('score');
         if (scoreElement) {
             scoreElement.textContent = '0';
         }
-
-        // Hide game over screen if visible
 
         // Dispatch a reset event for other components to listen for
         const resetEvent = new CustomEvent('gameReset');

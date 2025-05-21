@@ -6,7 +6,7 @@ import { gameLoop } from "./maze.js";
 
 // Story mode configuration with flag to track story parts
 const STORY_CONFIG = {
-  developmentScoreThreshold: 2000,
+  dotsThreshold: 124, // set to half of total dots
   introShown: false,
   developmentShown: false,
   conclusionShown: false,
@@ -70,14 +70,18 @@ export function initStoryMode() {
     }, 100);
   });
 
-  // Check for development story trigger based on score
-  setInterval(() => {
-    if (!isGamePaused() && !STORY_CONFIG.developmentShown && score >= STORY_CONFIG.developmentScoreThreshold) {
-      showStoryOverlay(storyDevelopment);
-      pauseGameForStory();
-      STORY_CONFIG.developmentShown = true;
+  // Check for development story trigger based on dots collected
+  document.addEventListener("dotCollected", (event) => {
+    if (!isGamePaused() && !STORY_CONFIG.developmentShown) {
+      const dotsCollected = window.gameState.totalDots - window.gameState.dotsRemaining;
+
+      if (dotsCollected >= STORY_CONFIG.dotsThreshold) {
+        showStoryOverlay(storyDevelopment);
+        pauseGameForStory();
+        STORY_CONFIG.developmentShown = true;
+      }
     }
-  }, 1000); // Check every second
+  });
 
   // Listen for game over event to show conclusion
   document.addEventListener("gameOver", (event) => {
@@ -92,6 +96,7 @@ export function initStoryMode() {
         }, 1000);
       }
       STORY_CONFIG.conclusionShown = true;
+      STORY_CONFIG.developmentShown = false;
     }
   });
 
