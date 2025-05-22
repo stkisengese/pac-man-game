@@ -1,5 +1,5 @@
 // Story mode management for Pac-Man game
-import { isGamePaused } from "./pause.js";
+import { createTimer, isGamePaused } from "./pause.js";
 import { score } from "./score.js";
 import { gameover, lives, ghostLoop } from "./ghosts.js";
 import { gameLoop } from "./maze.js";
@@ -138,6 +138,10 @@ function pauseGameForStory() {
 
   // Set a flag to indicate story is showing
   window.storyShowing = true;
+
+  if (window.timerInterval) {
+    clearInterval(window.timerInterval);
+  }
 }
 
 // Resume game after story is closed
@@ -153,6 +157,10 @@ function resumeGameAfterStory() {
   // Resume ghost game loop from ghost.js
   if (typeof ghostLoop === 'function') {
     ghostAnimationId = requestAnimationFrame(ghostLoop);
+  }
+
+  if (typeof createTimer === 'function') {
+    window.timerInterval = setInterval(createTimer, 1000);
   }
 }
 

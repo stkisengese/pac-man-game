@@ -82,7 +82,7 @@ export let timeLeft = 600; // 10 minutes in seconds
 
 export function createTimer() {
     if (timeLeft <= 0 || gameover == true) {
-        clearInterval(timerInterval);
+        clearInterval(window.timerInterval);
         return;
     }
     if (score > 0) {
@@ -99,7 +99,7 @@ export function createTimer() {
     }
 
 }
-let timerInterval = setInterval(createTimer, 1000);
+window.timerInterval = setInterval(createTimer, 1000);
 
 
 
@@ -112,7 +112,7 @@ export function resumeGame() {
     resumeAudio()
 
     //resume the timer
-    timerInterval = setInterval(createTimer, 1000)
+    window.timerInterval = setInterval(createTimer, 1000)
 }
 
 // Toggle pause state
@@ -129,7 +129,7 @@ function togglePause() {
         // Pause any audio that might be playing
         pauseAudio();
         //pause the timer
-        clearInterval(timerInterval)
+        clearInterval(window.timerInterval)
     } else {
         resumeGame();
     }
