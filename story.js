@@ -112,18 +112,18 @@ function showStoryOverlay(overlay) {
 
   // Fade in the overlay
   overlay.classList.remove("hidden");
-  overlay.style.opacity = "0";
+  overlay.style.transform = "scale(0)";
 
   // Use setTimeout to ensure the transition works
   setTimeout(() => {
-    overlay.style.opacity = "1";
+    overlay.style.transform = "scale(1)";
   }, 10);
 }
 
 // Helper function to hide a story overlay
 function hideStoryOverlay(overlay) {
   if (!overlay) return;
-  overlay.style.opacity = "0";   // Fade out the overlay
+  overlay.style.transform = "scale(0)";
 
   // Wait for transition to complete before hiding
   setTimeout(() => {
