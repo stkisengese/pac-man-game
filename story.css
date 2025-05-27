@@ -99,11 +99,11 @@
     height: 100%;
     background-image: radial-gradient(circle, #7df9ff, #2121ff);
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    animation: crystalGlow 3s infinite;
-    will-change: transform, filter;
+    /* animation: crystalGlow 3s infinite;
+    will-change: transform, filter; */
 }
 
-@keyframes crystalGlow {
+/* @keyframes crystalGlow {
 
     0%,
     100% {
@@ -115,4 +115,4 @@
         filter: drop-shadow(0 0 20px #7df9ff);
         transform: scale(1.1);
     }
-}
+} */
